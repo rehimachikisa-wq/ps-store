@@ -63,6 +63,7 @@
     <button class="tab-btn active" onclick="filterCategory('all', this)">All Products</button>
     <button class="tab-btn" onclick="filterCategory('console', this)">Consoles</button>
     <button class="tab-btn" onclick="filterCategory('accessory', this)">Controllers</button>
+    <button class="tab-btn" onclick="filterCategory('game', this)">Games</button>
   </div>
 
   <div class="product-grid" id="catalog"></div>
@@ -85,6 +86,8 @@
         <strong>Please transfer the exact amount:</strong><br><br>
         🏦 <strong>CBE Bank:</strong> <code>1000355132351</code><br>
         📱 <strong>Telebirr:</strong> <code>0924474307</code><br><br>
+        📍 <strong>Location:</strong> Around Yeka Abado Gedera Bacha Mall<br>
+        🚚 <strong>Delivery:</strong> Available to Megenagna<br><br>
         📌 <i>After completing the transfer, click below to send your screenshot directly to us on Telegram:</i>
       </div>
 
@@ -109,7 +112,8 @@
       { id: "ps5_slim_digital", name: "PS5 Slim (Digital)", desc: "Includes 1 original joystick. Sleek compact disc-free gaming.", price: 175000, cat: "console", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-72gWT7mc8JLfSrY8RXeTryZx7ZxMeYGc-LfLQ8j62w&s=10" },
       { id: "ps5_slim_disc", name: "PS5 Slim (Disc)", desc: "Includes 1 original joystick and Ultra HD Blu-ray disc drive.", price: 185000, cat: "console", img: "https://alfashop.ae/cdn/shop/files/5_9a009a2e-936d-4063-855e-3b3fef949283.jpg?v=1772624786&width=1946" },
       { id: "ps4_joy", name: "PS4 Controller", desc: "Original DualShock 4 Wireless Joystick.", price: 6000, cat: "accessory", img: "https://images.unsplash.com/photo-1592840496694-26d035b52b48?w=400&q=80" },
-      { id: "ps5_joy", name: "PS5 Controller", desc: "Original DualSense Wireless Joystick.", price: 13000, cat: "accessory", img: "https://m.media-amazon.com/images/I/51RYtih7YJL._AC_UF1000,1000_QL80_.jpg" }
+      { id: "ps5_joy", name: "PS5 Controller", desc: "Original DualSense Wireless Joystick.", price: 13000, cat: "accessory", img: "https://m.media-amazon.com/images/I/51RYtih7YJL._AC_UF1000,1000_QL80_.jpg" },
+      { id: "ps4_fc24", name: "EA Sports FC 24 (PS4)", desc: "Original Game Disc for PlayStation 4.", price: 4000, cat: "game", img: "https://m.media-amazon.com/images/I/81x1C60pveL._AC_SL1500_.jpg" }
     ];
 
     let selectedProduct = null;
@@ -152,7 +156,13 @@
       btn.disabled = false;
       btn.innerText = `Order for ${selectedProduct.price.toLocaleString()} ETB`;
       
-      renderCatalog(document.querySelector('.tab-btn.active').getAttribute('onclick').includes('console') ? 'console' : document.querySelector('.tab-btn.active').getAttribute('onclick').includes('accessory') ? 'accessory' : 'all');
+      const activeTab = document.querySelector('.tab-btn.active');
+      let currentFilter = 'all';
+      if (activeTab.getAttribute('onclick').includes('console')) currentFilter = 'console';
+      else if (activeTab.getAttribute('onclick').includes('accessory')) currentFilter = 'accessory';
+      else if (activeTab.getAttribute('onclick').includes('game')) currentFilter = 'game';
+
+      renderCatalog(currentFilter);
     }
 
     function showPaymentModal() {
