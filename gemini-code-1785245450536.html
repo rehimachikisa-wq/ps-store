@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PlayStation Store Ethiopia</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #2563eb;
+      --text: #f8fafc;
+      --subtext: #94a3b8;
+      --badge-jb: #dc2626;
+      --badge-norm: #16a34a;
+      --disabled: #475569;
+    }
+
+    body {
+      margin: 0; padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg); color: var(--text);
+    }
+
+    .header { margin-bottom: 16px; }
+    .header h1 { margin: 0; font-size: 22px; color: #60a5fa; }
+
+    /* Category Filter Tabs */
+    .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .tab-btn {
+      background: var(--card-bg); border: 1px solid #334155;
+      color: var(--text); padding: 8px 16px; border-radius: 20px;
+      font-size: 14px; cursor: pointer;
+    }
+    .tab-btn.active { background: var(--accent); border-color: var(--accent); }
+
+    /* Product Cards */
+    .product-grid { display: flex; flex-direction: column; gap: 16px; }
+    .card {
+      background: var(--card-bg); border-radius: 12px; overflow: hidden;
+      border: 1px solid #334155; display: flex; flex-direction: column;
+    }
+    .card img { width: 100%; height: 180px; object-fit: cover; background: #000; }
+    .card-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    
+    .card-title { font-size: 18px; font-weight: 700; margin: 0; }
+    
+    /* Variant Switcher */
+    .variant-selector { display: flex; gap: 8px; }
+    .v-btn {
+      flex: 1; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      border: 1px solid #475569; background: #0f172a; color: var(--subtext); cursor: pointer;
+    }
+    .v-btn.active[data-type="normal"] { background: var(--badge-norm); color: #fff; border-color: var(--badge-norm); }
+    .v-btn.active[data-type="jailbreak"] { background: var(--badge-jb); color: #fff; border-color: var(--badge-jb); }
+    .v-btn:disabled { opacity: 0.4; cursor: not-allowed; text-decoration: line-through; }
+
+    .price-tag { font-size: 20px; font-weight: 800; color: #38bdf8; }
+    .out-tag { font-size: 16px; font-weight: 700; color: #f87171; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>🎮 PlayStation Store</h1>
+    <p style="color: var(--subtext); margin: 4px 0 0 0; font-size: 14px;">Select console software or joysticks</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="filterCategory('all')">All</button>
+    <button class="tab-btn" onclick="filterCategory('console')">Consoles</button>
+    <button class="tab-btn" onclick="filterCategory('joystick')">Joysticks</button>
+  </div>
+
+  <div class="product-grid" id="product-list"></div>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    if (tg) tg.expand();
+
+    const catalog = [
+      {
+        id: "ps4_fat", type: "console", name: "PlayStation 4 Fat",
+        img: "https://blogs-images.forbes.com/gordonkelly/files/2016/11/Screenshot-2016-11-10-at-02.58.47-1200x369.png",
+        selectedVariant: "none",
+        outOfStock: true,
+        prices: { normal: 0, jailbreak: 0 }
+      },
+      {
+        id: "ps4_slim", type: "console", name: "PlayStation 4 Slim",
+        img: "https://blogs-images.forbes.com/gordonkelly/files/2016/11/Screenshot-2016-11-10-at-02.58.47-1200x369.png",
+        selectedVariant: "normal",
+        outOfStock: false,
+        prices: { normal: 58000, jailbreak: 72000 }
+      },
+      {
+        id: "ps4_pro", type: "console", name: "PlayStation 4 Pro",
+        img: "https://blogs-images.forbes.com/gordonkelly/files/2016/11/Screenshot-2016-11-10-at-02.58.47-1200x369.png",
+        selectedVariant: "jailbreak",
+        outOfStock: false,
+        prices: { normal: 0, jailbreak: 75000 } // Normal version unavailable
+      },
+      {
+        id: "ps4_joy", type: "joystick", name: "PS4 DualShock 4 Controller",
+        img: "https://asset.conrad.com/media10/isa/160267/c1/-/en/1518813_BB_00_FB/image.jpg",
+        selectedVariant: "standard",
+        outOfStock: false,
+        prices: { standard: 6000 }
+      },
+      {
+        id: "ps5_joy", type: "joystick", name: "PS5 DualSense Controller",
+        img: "https://media.direct.playstation.com/is/image/psdglobal/2025-dualsense-ps5-controller-white-accessory-box-front-eu-hero-4",
+        selectedVariant: "standard",
+        outOfStock: false,
+        prices: { standard: 13000 }
+      }
+    ];
+
+    let currentFilter = "all";
+
+    function renderProducts() {
+      const container = document.getElementById("product-list");
+      container.innerHTML = "";
+
+      catalog.filter(p => currentFilter === "all" || p.type === currentFilter).forEach(product => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        let variantHTML = "";
+        if (product.type === "console" && !product.outOfStock) {
+          variantHTML = `
+            <div class="variant-selector">
+              <button class="v-btn ${product.selectedVariant === 'normal' ? 'active' : ''}" 
+                      data-type="normal" 
+                      ${product.prices.normal === 0 ? 'disabled' : ''} 
+                      onclick="setVariant('${product.id}', 'normal')">
+                Normal ${product.prices.normal === 0 ? '(N/A)' : ''}
+              </button>
+              <button class="v-btn ${product.selectedVariant === 'jailbreak' ? 'active' : ''}" 
+                      data-type="jailbreak" 
+                      ${product.prices.jailbreak === 0 ? 'disabled' : ''} 
+                      onclick="setVariant('${product.id}', 'jailbreak')">
+                Jailbreak ${product.prices.jailbreak === 0 ? '(N/A)' : ''}
+              </button>
+            </div>
+          `;
+        }
+
+        const price = product.prices[product.selectedVariant] || 0;
+
+        card.innerHTML = `
+          <img src="${product.img}" alt="${product.name}" />
+          <div class="card-body">
+            <h3 class="card-title">${product.name}</h3>
+            ${variantHTML}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+              ${product.outOfStock 
+                ? `<span class="out-tag">Out of Stock</span>` 
+                : `<span class="price-tag">${price.toLocaleString()} ETB</span>`}
+              <button ${product.outOfStock ? 'disabled' : ''} 
+                      onclick="selectProduct('${product.id}')" 
+                      style="background: ${product.outOfStock ? 'var(--disabled)' : 'var(--accent)'}; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                ${product.outOfStock ? 'Unavailable' : 'Select'}
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function setVariant(productId, variant) {
+      const prod = catalog.find(p => p.id === productId);
+      if (prod && prod.prices[variant] > 0) {
+        prod.selectedVariant = variant;
+        renderProducts();
+      }
+    }
+
+    function selectProduct(productId) {
+      const prod = catalog.find(p => p.id === productId);
+      const price = prod.prices[prod.selectedVariant];
+      const selectedName = prod.type === 'console' ? `${prod.name} (${prod.selectedVariant.toUpperCase()})` : prod.name;
+      
+      if (tg?.MainButton) {
+        tg.MainButton.setText(`Buy ${selectedName} — ${price.toLocaleString()} ETB`);
+        tg.MainButton.show();
+      }
+    }
+
+    function filterCategory(cat) {
+      currentFilter = cat;
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      event.target.classList.add("active");
+      renderProducts();
+    }
+
+    renderProducts();
+  </script>
+</body>
+</html>
