@@ -4,170 +4,43 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Super PlayStation Store</title>
-  <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg-color: #0d1117;
-      --card-bg: #161b22;
-      --accent-blue: #0070d1;
-      --accent-hover: #005bb5;
-      --text-main: #f0f6fc;
-      --text-muted: #8b949e;
-      --border-color: #30363d;
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent-blue: #2563eb;
+      --accent-green: #16a34a;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 100px; }
+    
+    header { padding: 16px; background: #090d16; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 10; }
+    header h1 { font-size: 1.2rem; font-weight: 700; color: #fff; text-align: center; }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      padding-bottom: 90px;
-    }
+    .nav-tabs { display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; background-color: var(--bg-color); }
+    .tab-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .tab-btn.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
 
-    header {
-      padding: 16px;
-      background: #11161d;
-      border-bottom: 1px solid var(--border-color);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; padding: 16px; }
+    .product-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
+    
+    .product-img { width: 100%; height: 130px; object-fit: cover; background: #0f172a; }
+    .product-details { padding: 12px; }
+    .product-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+    .product-desc { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; line-height: 1.3; }
+    .product-price { font-size: 0.9rem; font-weight: 700; color: #4ade80; margin-bottom: 10px; }
 
-    header h1 {
-      font-size: 1.2rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .select-btn { background: var(--accent-blue); color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; width: 100%; cursor: pointer; }
+    .select-btn.selected { background: var(--accent-green); }
 
-    /* Category Navigation */
-    .nav-tabs {
-      display: flex;
-      gap: 8px;
-      padding: 12px 16px;
-      overflow-x: auto;
-      border-bottom: 1px solid var(--border-color);
-      background-color: var(--bg-color);
-    }
-
-    .tab-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      white-space: nowrap;
-      cursor: pointer;
-    }
-
-    .tab-btn.active {
-      background: var(--accent-blue);
-      color: #fff;
-      border-color: var(--accent-blue);
-    }
-
-    /* Product Grid */
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 12px;
-      padding: 16px;
-    }
-
-    .product-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .product-badge {
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      padding: 3px 6px;
-      border-radius: 4px;
-      width: fit-content;
-      margin-bottom: 8px;
-    }
-
-    .badge-console { background: rgba(0, 112, 209, 0.2); color: #58a6ff; }
-    .badge-accessory { background: rgba(46, 160, 67, 0.2); color: #3fb950; }
-
-    .product-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .product-price {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #3fb950;
-      margin-bottom: 12px;
-    }
-
-    .order-btn {
-      background: var(--accent-blue);
-      color: #fff;
-      border: none;
-      padding: 8px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.85rem;
-      width: 100%;
-      cursor: pointer;
-    }
-
-    .order-btn:active {
-      background: var(--accent-hover);
-    }
-
-    /* Floating Cart Footer */
-    .cart-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #161b22;
-      border-top: 1px solid var(--border-color);
-      padding: 12px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 -4px 12px rgba(0,0,0,0.4);
-    }
-
-    .checkout-btn {
-      background: #2ea44f;
-      color: #fff;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .checkout-btn:disabled {
-      background: #30363d;
-      color: var(--text-muted);
-      cursor: not-allowed;
-    }
+    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #090d16; border-top: 1px solid var(--border-color); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+    .checkout-btn { background: var(--accent-green); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+    .checkout-btn:disabled { background: #334155; color: var(--text-muted); cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -176,37 +49,36 @@
     <h1>🎮 Super PlayStation Store</h1>
   </header>
 
-  <!-- Navigation Filters -->
   <div class="nav-tabs">
-    <button class="tab-btn active" onclick="filterCategory('all', this)">All Items</button>
+    <button class="tab-btn active" onclick="filterCategory('all', this)">All Products</button>
     <button class="tab-btn" onclick="filterCategory('console', this)">Consoles</button>
-    <button class="tab-btn" onclick="filterCategory('accessory', this)">Controllers & Gear</button>
+    <button class="tab-btn" onclick="filterCategory('accessory', this)">Controllers</button>
   </div>
 
-  <!-- Product Catalog Grid -->
   <div class="product-grid" id="catalog"></div>
 
-  <!-- Bottom Checkout Bar -->
   <div class="cart-bar">
     <div>
-      <div style="font-size: 0.75rem; color: var(--text-muted);">Selected Item:</div>
-      <div id="cart-item" style="font-size: 0.9rem; font-weight: 600;">None</div>
+      <div style="font-size: 0.75rem; color: var(--text-muted);">Selected:</div>
+      <div id="cart-item" style="font-size: 0.85rem; font-weight: 600;">None</div>
     </div>
     <button class="checkout-btn" id="checkout-btn" disabled onclick="sendOrderToBot()">Confirm Order</button>
   </div>
 
   <script>
-    // Initialize Telegram WebApp SDK
     const tg = window.Telegram ? window.Telegram.WebApp : null;
-    if (tg) tg.expand();
+    if (tg) {
+      tg.expand();
+      tg.ready();
+    }
 
     const products = [
-      { id: "ps4_slim_norm", name: "PS4 Slim (Normal)", price: 58000, cat: "console" },
-      { id: "ps4_slim_jb", name: "PS4 Slim (Jailbreak)", price: 72000, cat: "console" },
-      { id: "ps4_pro_jb", name: "PS4 Pro (Jailbreak)", price: 75000, cat: "console" },
-      { id: "ps5_pro", name: "PS5 Pro Console", price: 185000, cat: "console" },
-      { id: "ps4_joy", name: "PS4 DualShock Controller", price: 6000, cat: "accessory" },
-      { id: "ps5_joy", name: "PS5 DualSense Controller", price: 13000, cat: "accessory" },
+      { id: "ps4_slim_norm", name: "PS4 Slim 500GB", desc: "Clean original console with 1 controller.", price: 58000, cat: "console", img: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=400&q=80" },
+      { id: "ps4_slim_jb", name: "PS4 Slim Jailbreak", desc: "Loaded with 20+ top games preinstalled.", price: 72000, cat: "console", img: "https://images.unsplash.com/photo-1507457379470-08b800bebc67?w=400&q=80" },
+      { id: "ps4_pro_jb", name: "PS4 Pro Jailbreak", desc: "4K Gaming power with full game library.", price: 75000, cat: "console", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&q=80" },
+      { id: "ps5_pro", name: "PS5 Console", desc: "Next-gen ultra-high speed console.", price: 185000, cat: "console", img: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400&q=80" },
+      { id: "ps4_joy", name: "PS4 Controller", desc: "Original DualShock 4 Wireless Joystick.", price: 6000, cat: "accessory", img: "https://images.unsplash.com/photo-1592840496694-26d035b52b48?w=400&q=80" },
+      { id: "ps5_joy", name: "PS5 Controller", desc: "Original DualSense Wireless Joystick.", price: 13000, cat: "accessory", img: "https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?w=400&q=80" }
     ];
 
     let selectedProduct = null;
@@ -214,20 +86,22 @@
     function renderCatalog(filter = 'all') {
       const container = document.getElementById('catalog');
       container.innerHTML = '';
-
       const items = filter === 'all' ? products : products.filter(p => p.cat === filter);
 
       items.forEach(p => {
-        const badgeClass = p.cat === 'console' ? 'badge-console' : 'badge-accessory';
+        const isSelected = selectedProduct && selectedProduct.id === p.id;
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
-          <div>
-            <span class="product-badge ${badgeClass}">${p.cat}</span>
+          <img src="${p.img}" class="product-img" alt="${p.name}">
+          <div class="product-details">
             <div class="product-title">${p.name}</div>
+            <div class="product-desc">${p.desc}</div>
             <div class="product-price">${p.price.toLocaleString()} ETB</div>
+            <button class="select-btn ${isSelected ? 'selected' : ''}" onclick="selectItem('${p.id}')">
+              ${isSelected ? '✓ Selected' : 'Select'}
+            </button>
           </div>
-          <button class="order-btn" onclick="selectItem('${p.id}')">Select</button>
         `;
         container.appendChild(card);
       });
@@ -246,26 +120,28 @@
       const btn = document.getElementById('checkout-btn');
       btn.disabled = false;
       btn.innerText = `Order for ${selectedProduct.price.toLocaleString()} ETB`;
+      
+      // Re-render to update selected button styling
+      const activeTab = document.querySelector('.tab-btn.active').innerText.toLowerCase();
+      renderCatalog(activeTab.includes('console') ? 'console' : activeTab.includes('controller') ? 'accessory' : 'all');
     }
 
     function sendOrderToBot() {
       if (!selectedProduct) return;
 
-      if (tg) {
-        // Send data directly back to Telegram Bot
-        tg.sendData(JSON.stringify({
-          action: "buy_item",
-          product_id: selectedProduct.id,
-          product_name: selectedProduct.name,
-          price: selectedProduct.price
-        }));
+      const payload = JSON.stringify({
+        product_name: selectedProduct.name,
+        price: selectedProduct.price
+      });
+
+      if (tg && tg.sendData) {
+        tg.sendData(payload);
         tg.close();
       } else {
-        alert(`Order selected: ${selectedProduct.name}. Open inside Telegram to place order!`);
+        alert(`Order Selected: ${selectedProduct.name} for ${selectedProduct.price.toLocaleString()} ETB.\n\nOpen this inside Telegram to complete your order!`);
       }
     }
 
-    // Initial render
     renderCatalog();
   </script>
 </body>
