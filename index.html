@@ -1,202 +1,272 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PlayStation Store Ethiopia</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Super PlayStation Store</title>
+  <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --accent: #2563eb;
-      --text: #f8fafc;
-      --subtext: #94a3b8;
-      --badge-jb: #dc2626;
-      --badge-norm: #16a34a;
-      --disabled: #475569;
+      --bg-color: #0d1117;
+      --card-bg: #161b22;
+      --accent-blue: #0070d1;
+      --accent-hover: #005bb5;
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+      --border-color: #30363d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     body {
-      margin: 0; padding: 16px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg); color: var(--text);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 90px;
     }
 
-    .header { margin-bottom: 16px; }
-    .header h1 { margin: 0; font-size: 22px; color: #60a5fa; }
+    header {
+      padding: 16px;
+      background: #11161d;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
 
-    /* Category Filter Tabs */
-    .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    header h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Category Navigation */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--border-color);
+      background-color: var(--bg-color);
+    }
+
     .tab-btn {
-      background: var(--card-bg); border: 1px solid #334155;
-      color: var(--text); padding: 8px 16px; border-radius: 20px;
-      font-size: 14px; cursor: pointer;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
     }
-    .tab-btn.active { background: var(--accent); border-color: var(--accent); }
 
-    /* Product Cards */
-    .product-grid { display: flex; flex-direction: column; gap: 16px; }
-    .card {
-      background: var(--card-bg); border-radius: 12px; overflow: hidden;
-      border: 1px solid #334155; display: flex; flex-direction: column;
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #fff;
+      border-color: var(--accent-blue);
     }
-    .card img { width: 100%; height: 180px; object-fit: cover; background: #000; }
-    .card-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-    
-    .card-title { font-size: 18px; font-weight: 700; margin: 0; }
-    
-    /* Variant Switcher */
-    .variant-selector { display: flex; gap: 8px; }
-    .v-btn {
-      flex: 1; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 600;
-      border: 1px solid #475569; background: #0f172a; color: var(--subtext); cursor: pointer;
-    }
-    .v-btn.active[data-type="normal"] { background: var(--badge-norm); color: #fff; border-color: var(--badge-norm); }
-    .v-btn.active[data-type="jailbreak"] { background: var(--badge-jb); color: #fff; border-color: var(--badge-jb); }
-    .v-btn:disabled { opacity: 0.4; cursor: not-allowed; text-decoration: line-through; }
 
-    .price-tag { font-size: 20px; font-weight: 800; color: #38bdf8; }
-    .out-tag { font-size: 16px; font-weight: 700; color: #f87171; }
+    /* Product Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .product-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .product-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 6px;
+      border-radius: 4px;
+      width: fit-content;
+      margin-bottom: 8px;
+    }
+
+    .badge-console { background: rgba(0, 112, 209, 0.2); color: #58a6ff; }
+    .badge-accessory { background: rgba(46, 160, 67, 0.2); color: #3fb950; }
+
+    .product-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .product-price {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #3fb950;
+      margin-bottom: 12px;
+    }
+
+    .order-btn {
+      background: var(--accent-blue);
+      color: #fff;
+      border: none;
+      padding: 8px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .order-btn:active {
+      background: var(--accent-hover);
+    }
+
+    /* Floating Cart Footer */
+    .cart-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #161b22;
+      border-top: 1px solid var(--border-color);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.4);
+    }
+
+    .checkout-btn {
+      background: #2ea44f;
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .checkout-btn:disabled {
+      background: #30363d;
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>🎮 PlayStation Store</h1>
-    <p style="color: var(--subtext); margin: 4px 0 0 0; font-size: 14px;">Select console software or joysticks</p>
+  <header>
+    <h1>🎮 Super PlayStation Store</h1>
+  </header>
+
+  <!-- Navigation Filters -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="filterCategory('all', this)">All Items</button>
+    <button class="tab-btn" onclick="filterCategory('console', this)">Consoles</button>
+    <button class="tab-btn" onclick="filterCategory('accessory', this)">Controllers & Gear</button>
   </div>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="filterCategory('all')">All</button>
-    <button class="tab-btn" onclick="filterCategory('console')">Consoles</button>
-    <button class="tab-btn" onclick="filterCategory('joystick')">Joysticks</button>
-  </div>
+  <!-- Product Catalog Grid -->
+  <div class="product-grid" id="catalog"></div>
 
-  <div class="product-grid" id="product-list"></div>
+  <!-- Bottom Checkout Bar -->
+  <div class="cart-bar">
+    <div>
+      <div style="font-size: 0.75rem; color: var(--text-muted);">Selected Item:</div>
+      <div id="cart-item" style="font-size: 0.9rem; font-weight: 600;">None</div>
+    </div>
+    <button class="checkout-btn" id="checkout-btn" disabled onclick="sendOrderToBot()">Confirm Order</button>
+  </div>
 
   <script>
-    const tg = window.Telegram?.WebApp;
+    // Initialize Telegram WebApp SDK
+    const tg = window.Telegram ? window.Telegram.WebApp : null;
     if (tg) tg.expand();
 
-    const catalog = [
-      {
-        id: "ps4_fat", type: "console", name: "PlayStation 4 Fat",
-        img: "https://blogs-images.forbes.com/gordonkelly/files/2016/11/Screenshot-2016-11-10-at-02.58.47-1200x369.png",
-        selectedVariant: "none",
-        outOfStock: true,
-        prices: { normal: 0, jailbreak: 0 }
-      },
-      {
-        id: "ps4_slim", type: "console", name: "PlayStation 4 Slim",
-        img: "https://blogs-images.forbes.com/gordonkelly/files/2016/11/Screenshot-2016-11-10-at-02.58.47-1200x369.png",
-        selectedVariant: "normal",
-        outOfStock: false,
-        prices: { normal: 58000, jailbreak: 72000 }
-      },
-      {
-        id: "ps4_pro", type: "console", name: "PlayStation 4 Pro",
-        img: "https://blogs-images.forbes.com/gordonkelly/files/2016/11/Screenshot-2016-11-10-at-02.58.47-1200x369.png",
-        selectedVariant: "jailbreak",
-        outOfStock: false,
-        prices: { normal: 0, jailbreak: 75000 } // Normal version unavailable
-      },
-      {
-        id: "ps4_joy", type: "joystick", name: "PS4 DualShock 4 Controller",
-        img: "https://asset.conrad.com/media10/isa/160267/c1/-/en/1518813_BB_00_FB/image.jpg",
-        selectedVariant: "standard",
-        outOfStock: false,
-        prices: { standard: 6000 }
-      },
-      {
-        id: "ps5_joy", type: "joystick", name: "PS5 DualSense Controller",
-        img: "https://media.direct.playstation.com/is/image/psdglobal/2025-dualsense-ps5-controller-white-accessory-box-front-eu-hero-4",
-        selectedVariant: "standard",
-        outOfStock: false,
-        prices: { standard: 13000 }
-      }
+    const products = [
+      { id: "ps4_slim_norm", name: "PS4 Slim (Normal)", price: 58000, cat: "console" },
+      { id: "ps4_slim_jb", name: "PS4 Slim (Jailbreak)", price: 72000, cat: "console" },
+      { id: "ps4_pro_jb", name: "PS4 Pro (Jailbreak)", price: 75000, cat: "console" },
+      { id: "ps5_pro", name: "PS5 Pro Console", price: 185000, cat: "console" },
+      { id: "ps4_joy", name: "PS4 DualShock Controller", price: 6000, cat: "accessory" },
+      { id: "ps5_joy", name: "PS5 DualSense Controller", price: 13000, cat: "accessory" },
     ];
 
-    let currentFilter = "all";
+    let selectedProduct = null;
 
-    function renderProducts() {
-      const container = document.getElementById("product-list");
-      container.innerHTML = "";
+    function renderCatalog(filter = 'all') {
+      const container = document.getElementById('catalog');
+      container.innerHTML = '';
 
-      catalog.filter(p => currentFilter === "all" || p.type === currentFilter).forEach(product => {
-        const card = document.createElement("div");
-        card.className = "card";
+      const items = filter === 'all' ? products : products.filter(p => p.cat === filter);
 
-        let variantHTML = "";
-        if (product.type === "console" && !product.outOfStock) {
-          variantHTML = `
-            <div class="variant-selector">
-              <button class="v-btn ${product.selectedVariant === 'normal' ? 'active' : ''}" 
-                      data-type="normal" 
-                      ${product.prices.normal === 0 ? 'disabled' : ''} 
-                      onclick="setVariant('${product.id}', 'normal')">
-                Normal ${product.prices.normal === 0 ? '(N/A)' : ''}
-              </button>
-              <button class="v-btn ${product.selectedVariant === 'jailbreak' ? 'active' : ''}" 
-                      data-type="jailbreak" 
-                      ${product.prices.jailbreak === 0 ? 'disabled' : ''} 
-                      onclick="setVariant('${product.id}', 'jailbreak')">
-                Jailbreak ${product.prices.jailbreak === 0 ? '(N/A)' : ''}
-              </button>
-            </div>
-          `;
-        }
-
-        const price = product.prices[product.selectedVariant] || 0;
-
+      items.forEach(p => {
+        const badgeClass = p.cat === 'console' ? 'badge-console' : 'badge-accessory';
+        const card = document.createElement('div');
+        card.className = 'product-card';
         card.innerHTML = `
-          <img src="${product.img}" alt="${product.name}" />
-          <div class="card-body">
-            <h3 class="card-title">${product.name}</h3>
-            ${variantHTML}
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-              ${product.outOfStock 
-                ? `<span class="out-tag">Out of Stock</span>` 
-                : `<span class="price-tag">${price.toLocaleString()} ETB</span>`}
-              <button ${product.outOfStock ? 'disabled' : ''} 
-                      onclick="selectProduct('${product.id}')" 
-                      style="background: ${product.outOfStock ? 'var(--disabled)' : 'var(--accent)'}; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer;">
-                ${product.outOfStock ? 'Unavailable' : 'Select'}
-              </button>
-            </div>
+          <div>
+            <span class="product-badge ${badgeClass}">${p.cat}</span>
+            <div class="product-title">${p.name}</div>
+            <div class="product-price">${p.price.toLocaleString()} ETB</div>
           </div>
+          <button class="order-btn" onclick="selectItem('${p.id}')">Select</button>
         `;
         container.appendChild(card);
       });
     }
 
-    function setVariant(productId, variant) {
-      const prod = catalog.find(p => p.id === productId);
-      if (prod && prod.prices[variant] > 0) {
-        prod.selectedVariant = variant;
-        renderProducts();
-      }
+    function filterCategory(category, btnElement) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btnElement.classList.add('active');
+      renderCatalog(category);
     }
 
-    function selectProduct(productId) {
-      const prod = catalog.find(p => p.id === productId);
-      const price = prod.prices[prod.selectedVariant];
-      const selectedName = prod.type === 'console' ? `${prod.name} (${prod.selectedVariant.toUpperCase()})` : prod.name;
+    function selectItem(productId) {
+      selectedProduct = products.find(p => p.id === productId);
+      document.getElementById('cart-item').innerText = `${selectedProduct.name} (${selectedProduct.price.toLocaleString()} ETB)`;
       
-      if (tg?.MainButton) {
-        tg.MainButton.setText(`Buy ${selectedName} — ${price.toLocaleString()} ETB`);
-        tg.MainButton.show();
+      const btn = document.getElementById('checkout-btn');
+      btn.disabled = false;
+      btn.innerText = `Order for ${selectedProduct.price.toLocaleString()} ETB`;
+    }
+
+    function sendOrderToBot() {
+      if (!selectedProduct) return;
+
+      if (tg) {
+        // Send data directly back to Telegram Bot
+        tg.sendData(JSON.stringify({
+          action: "buy_item",
+          product_id: selectedProduct.id,
+          product_name: selectedProduct.name,
+          price: selectedProduct.price
+        }));
+        tg.close();
+      } else {
+        alert(`Order selected: ${selectedProduct.name}. Open inside Telegram to place order!`);
       }
     }
 
-    function filterCategory(cat) {
-      currentFilter = cat;
-      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-      event.target.classList.add("active");
-      renderProducts();
-    }
-
-    renderProducts();
+    // Initial render
+    renderCatalog();
   </script>
 </body>
 </html>
