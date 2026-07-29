@@ -312,6 +312,51 @@
             margin-bottom: 3px;
         }
 
+        /* Duration Selector Styles */
+        .duration-selector-box {
+            background-color: #242424;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #333;
+        }
+
+        .duration-selector-box h3 {
+            margin: 0 0 8px 0;
+            font-size: 13px;
+            color: #0070d1;
+            text-transform: uppercase;
+        }
+
+        .duration-options-grid {
+            display: flex;
+            gap: 8px;
+        }
+
+        .duration-option-card {
+            flex: 1;
+            background-color: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 12px;
+            color: #ccc;
+            transition: all 0.2s ease;
+        }
+
+        .duration-option-card.selected {
+            border-color: #0070d1;
+            background-color: #1a2634;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .duration-option-card input {
+            display: none;
+        }
+
         /* Quantity & Cart actions inside Detail View */
         .qty-action-box {
             background-color: #262626;
@@ -432,10 +477,15 @@
         .cart-item-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             font-size: 13px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: #ccc;
+        }
+
+        .cart-item-details div {
+            font-size: 11px;
+            color: #aaa;
         }
 
         .cart-divider {
@@ -595,8 +645,15 @@
         .summary-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             color: #ccc;
+            align-items: flex-start;
+        }
+
+        .summary-row-details {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 2px;
         }
 
         .summary-total-row {
@@ -786,6 +843,9 @@
 
             <h1 class="detail-title" id="detailTitle"></h1>
             <div class="detail-price" id="detailPrice"></div>
+
+            <!-- Subscription Duration Selector Container (Injected if subscription) -->
+            <div id="durationSelectorContainer"></div>
 
             <!-- Description Breakdown -->
             <div class="info-block" id="includedBlock">
@@ -1218,17 +1278,22 @@
                 conditionType: "hardware"
             },
             {
-                id: "ps-plus-essential-1m",
-                name: "PS Plus Essential (1 Month)",
+                id: "ps-plus-essential",
+                name: "PS Plus Essential",
                 category: "Subscription",
-                price: 3099.00,
+                tier: "Essential",
                 badge: "",
                 badgeClass: "",
                 images: [
                     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUtrLrj9CfCHmZ0b_g3r9wUeSe8HDEqbTOLGw_u7JWN7IkXuGo5xPF_rKB&s=10"
                 ],
+                durations: {
+                    "1": { label: "1 Month", price: 3099.00 },
+                    "3": { label: "3 Months", price: 5499.00 },
+                    "12": { label: "12 Months", price: 14999.00 }
+                },
                 included: [
-                    "1 Month Digital Subscription Code/Voucher"
+                    "Digital Subscription Code/Voucher"
                 ],
                 features: [
                     "✔ Online Multiplayer Access",
@@ -1239,17 +1304,22 @@
                 conditionType: "digital"
             },
             {
-                id: "ps-plus-extra-1m",
-                name: "PS Plus Extra (1 Month)",
+                id: "ps-plus-extra",
+                name: "PS Plus Extra",
                 category: "Subscription",
-                price: 3799.00,
+                tier: "Extra",
                 badge: "",
                 badgeClass: "",
                 images: [
                     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUtrLrj9CfCHmZ0b_g3r9wUeSe8HDEqbTOLGw_u7JWN7IkXuGo5xPF_rKB&s=10"
                 ],
+                durations: {
+                    "1": { label: "1 Month", price: 3799.00 },
+                    "3": { label: "3 Months", price: 8999.00 },
+                    "12": { label: "12 Months", price: 22999.00 }
+                },
                 included: [
-                    "1 Month Digital Subscription Code/Voucher"
+                    "Digital Subscription Code/Voucher"
                 ],
                 features: [
                     "✔ Everything in Essential",
@@ -1258,17 +1328,22 @@
                 conditionType: "digital"
             },
             {
-                id: "ps-plus-deluxe-1m",
-                name: "PS Plus Deluxe (1 Month)",
+                id: "ps-plus-deluxe",
+                name: "PS Plus Premium",
                 category: "Subscription",
-                price: 4299.00,
+                tier: "Premium",
                 badge: "",
                 badgeClass: "",
                 images: [
                     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUtrLrj9CfCHmZ0b_g3r9wUeSe8HDEqbTOLGw_u7JWN7IkXuGo5xPF_rKB&s=10"
                 ],
+                durations: {
+                    "1": { label: "1 Month", price: 4299.00 },
+                    "3": { label: "3 Months", price: 10499.00 },
+                    "12": { label: "12 Months", price: 26599.00 }
+                },
                 included: [
-                    "1 Month Digital Subscription Code/Voucher"
+                    "Digital Subscription Code/Voucher"
                 ],
                 features: [
                     "✔ Everything in Extra",
@@ -1283,6 +1358,7 @@
         let favorites = JSON.parse(localStorage.getItem('ps_favorites') || '{}');
         let currentSelectedProduct = null;
         let detailQuantity = 1;
+        let selectedDuration = "1";
         let currentImageIndex = 0;
         let isCartExpanded = false;
         let selectedDeliveryMethod = 'pickup';
@@ -1314,6 +1390,11 @@
                 const isFirst = index === 0 && filterCategory === 'All' && !query;
                 const loadingAttr = isFirst ? 'fetchpriority="high"' : 'loading="lazy" decoding="async"';
 
+                let displayPrice = product.price;
+                if (product.category === 'Subscription') {
+                    displayPrice = product.durations["1"].price;
+                }
+
                 card.innerHTML = `
                     ${badgeHtml}
                     <button class="fav-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite('${product.id}')">❤️</button>
@@ -1322,8 +1403,8 @@
                         <div class="product-info">
                             <div class="product-title">${product.name}</div>
                             <div class="product-footer">
-                                <span class="product-price">${product.price.toLocaleString()} ETB</span>
-                                <button class="quick-add-btn" onclick="event.stopPropagation(); quickAddToCart('${product.id}')">Add +</button>
+                                <span class="product-price">${displayPrice.toLocaleString()} ETB</span>
+                                <button class="quick-add-btn" onclick="event.stopPropagation(); openProductDetail('${product.id}')">View</button>
                             </div>
                         </div>
                     </div>
@@ -1371,9 +1452,9 @@
 
             detailQuantity = 1;
             currentImageIndex = 0;
+            selectedDuration = "1";
 
             document.getElementById('detailTitle').innerText = currentSelectedProduct.name;
-            document.getElementById('detailPrice').innerText = currentSelectedProduct.price.toLocaleString() + " ETB";
 
             // Setup Slider
             const track = document.getElementById('sliderTrack');
@@ -1393,6 +1474,36 @@
             });
             track.style.transform = `translateX(0px)`;
 
+            // Setup Duration Selector if Subscription
+            const durationContainer = document.getElementById('durationSelectorContainer');
+            if (currentSelectedProduct.category === 'Subscription') {
+                durationContainer.style.display = 'block';
+                let optionsHtml = '';
+                for (let durKey in currentSelectedProduct.durations) {
+                    const durObj = currentSelectedProduct.durations[durKey];
+                    const isSelected = durKey === selectedDuration ? 'selected' : '';
+                    optionsHtml += `
+                        <div class="duration-option-card ${isSelected}" onclick="selectDuration('${durKey}')" id="dur-card-${durKey}">
+                            <div><strong>${durObj.label}</strong></div>
+                            <div style="font-size: 11px; color: #4cd964; margin-top:2px;">${durObj.price.toLocaleString()} ETB</div>
+                        </div>
+                    `;
+                }
+                durationContainer.innerHTML = `
+                    <div class="duration-selector-box">
+                        <h3>Subscription Duration *</h3>
+                        <div class="duration-options-grid">
+                            ${optionsHtml}
+                        </div>
+                    </div>
+                `;
+            } else {
+                durationContainer.style.display = 'none';
+                durationContainer.innerHTML = '';
+            }
+
+            updateProductPriceDisplay();
+
             // Included list
             const includedList = document.getElementById('includedList');
             includedList.innerHTML = '';
@@ -1411,7 +1522,7 @@
                 featuresList.appendChild(li);
             });
 
-            // Condition & Warranty list (adjusted based on type)
+            // Condition & Warranty list
             const conditionList = document.getElementById('conditionList');
             conditionList.innerHTML = '';
             if (currentSelectedProduct.conditionType === 'digital') {
@@ -1433,6 +1544,25 @@
             document.getElementById('catalogView').classList.remove('active');
             document.getElementById('detailView').classList.add('active');
             window.scrollTo(0, 0);
+        }
+
+        function selectDuration(durationKey) {
+            selectedDuration = durationKey;
+            document.querySelectorAll('.duration-option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            const activeCard = document.getElementById(`dur-card-${durationKey}`);
+            if (activeCard) activeCard.classList.add('selected');
+            updateProductPriceDisplay();
+            updateDetailQuantityUI();
+        }
+
+        function updateProductPriceDisplay() {
+            let price = currentSelectedProduct.price;
+            if (currentSelectedProduct.category === 'Subscription') {
+                price = currentSelectedProduct.durations[selectedDuration].price;
+            }
+            document.getElementById('detailPrice').innerText = price.toLocaleString() + " ETB";
         }
 
         function setSliderImage(index) {
@@ -1458,55 +1588,72 @@
             document.getElementById('detailQtyDisplay').innerText = detailQuantity;
         }
 
+        function getCartKey(productId, duration) {
+            return currentSelectedProduct.category === 'Subscription' ? `${productId}-${duration}` : productId;
+        }
+
         function updateDetailQuantityUI() {
             document.getElementById('detailQtyDisplay').innerText = detailQuantity;
             const container = document.getElementById('detailActionButtons');
-            const existingInCart = cart[currentSelectedProduct.id];
+            
+            let cartKey = currentSelectedProduct.id;
+            if (currentSelectedProduct.category === 'Subscription') {
+                cartKey = getCartKey(currentSelectedProduct.id, selectedDuration);
+            }
+
+            const existingInCart = cart[cartKey];
 
             if (existingInCart) {
                 container.innerHTML = `
-                    <button class="main-action-btn" style="background-color: #4cd964; color: #000;" onclick="updateCartQuantity('${currentSelectedProduct.id}', ${detailQuantity})">Added ✓ (Update Qty)</button>
-                    <button class="remove-cart-btn" onclick="removeFromCart('${currentSelectedProduct.id}')">🗑 Remove from Cart</button>
+                    <button class="main-action-btn" style="background-color: #4cd964; color: #000;" onclick="updateCartQuantity('${cartKey}', ${detailQuantity})">Added ✓ (Update Qty)</button>
+                    <button class="remove-cart-btn" onclick="removeFromCart('${cartKey}')">🗑 Remove from Cart</button>
                 `;
             } else {
                 container.innerHTML = `
-                    <button class="main-action-btn" onclick="addCustomToCart('${currentSelectedProduct.id}', ${detailQuantity})">Add to Cart</button>
+                    <button class="main-action-btn" onclick="addCustomToCart(${detailQuantity})">Add to Cart</button>
                 `;
             }
         }
 
-        function quickAddToCart(productId) {
-            if (cart[productId]) {
-                cart[productId].qty += 1;
-            } else {
-                const product = products.find(p => p.id === productId);
-                cart[productId] = { ...product, qty: 1 };
-            }
-            updateCartBar();
-            if (currentSelectedProduct && currentSelectedProduct.id === productId) {
-                updateDetailQuantityUI();
-            }
-        }
+        function addCustomToCart(qty) {
+            let price = currentSelectedProduct.price;
+            let durationLabel = "";
+            let cartKey = currentSelectedProduct.id;
 
-        function addCustomToCart(productId, qty) {
-            const product = products.find(p => p.id === productId);
-            cart[productId] = { ...product, qty: qty };
+            if (currentSelectedProduct.category === 'Subscription') {
+                const durObj = currentSelectedProduct.durations[selectedDuration];
+                price = durObj.price;
+                durationLabel = durObj.label;
+                cartKey = getCartKey(currentSelectedProduct.id, selectedDuration);
+            }
+
+            cart[cartKey] = {
+                productId: currentSelectedProduct.id,
+                name: currentSelectedProduct.name,
+                category: currentSelectedProduct.category,
+                tier: currentSelectedProduct.tier || null,
+                durationMonths: selectedDuration,
+                durationLabel: durationLabel,
+                price: price,
+                qty: qty
+            };
+
             updateCartBar();
             updateDetailQuantityUI();
         }
 
-        function updateCartQuantity(productId, qty) {
-            if (cart[productId]) {
-                cart[productId].qty = qty;
+        function updateCartQuantity(cartKey, qty) {
+            if (cart[cartKey]) {
+                cart[cartKey].qty = qty;
                 updateCartBar();
                 updateDetailQuantityUI();
             }
         }
 
-        function removeFromCart(productId) {
-            delete cart[productId];
+        function removeFromCart(cartKey) {
+            delete cart[cartKey];
             updateCartBar();
-            if (currentSelectedProduct && currentSelectedProduct.id === productId) {
+            if (currentSelectedProduct) {
                 detailQuantity = 1;
                 updateDetailQuantityUI();
             }
@@ -1531,15 +1678,24 @@
             let totalPrice = 0;
             cartItemList.innerHTML = '';
 
-            for (let id in cart) {
-                const item = cart[id];
+            for (let key in cart) {
+                const item = cart[key];
                 totalItems += item.qty;
                 totalPrice += item.price * item.qty;
 
                 const row = document.createElement('div');
                 row.className = 'cart-item-row';
+                
+                let detailText = '';
+                if (item.category === 'Subscription') {
+                    detailText = `<div class="cart-item-details">${item.durationLabel}</div>`;
+                }
+
                 row.innerHTML = `
-                    <span>${item.name} x${item.qty}</span>
+                    <div>
+                        <div><strong>${item.name}</strong> x${item.qty}</div>
+                        ${detailText}
+                    </div>
                     <span><strong>${(item.price * item.qty).toLocaleString()} ETB</strong></span>
                 `;
                 cartItemList.appendChild(row);
@@ -1575,13 +1731,12 @@
             populateCheckoutSummary();
         }
 
-        // Helper checks for cart item types
         function getCartComposition() {
             let hasSubscription = false;
             let hasPhysical = false;
 
-            for (let id in cart) {
-                if (cart[id].category === 'Subscription') {
+            for (let key in cart) {
+                if (cart[key].category === 'Subscription') {
                     hasSubscription = true;
                 } else {
                     hasPhysical = true;
@@ -1595,12 +1750,25 @@
             summaryContainer.innerHTML = '';
 
             let subtotal = 0;
-            for (let id in cart) {
-                const item = cart[id];
+            for (let key in cart) {
+                const item = cart[key];
                 subtotal += item.price * item.qty;
+                
                 const row = document.createElement('div');
                 row.className = 'summary-row';
-                row.innerHTML = `<span>${item.name} ×${item.qty}</span> <span>${(item.price * item.qty).toLocaleString()} ETB</span>`;
+                
+                let subDetails = '';
+                if (item.category === 'Subscription') {
+                    subDetails = `<div class="summary-row-details">${item.durationLabel}</div>`;
+                }
+
+                row.innerHTML = `
+                    <div>
+                        <div>${item.name} ×${item.qty}</div>
+                        ${subDetails}
+                    </div>
+                    <span>${(item.price * item.qty).toLocaleString()} ETB</span>
+                `;
                 summaryContainer.appendChild(row);
             }
 
@@ -1641,7 +1809,6 @@
             const arrivalNoticeText = document.getElementById('arrivalNoticeText');
 
             if (hasSubscription && !hasPhysical) {
-                // ONLY PlayStation Plus subscriptions
                 deliveryMethodSectionWrapper.style.display = 'none';
                 digitalNoticeBox.style.display = 'block';
                 document.getElementById('digitalNoticeText').innerHTML = `
@@ -1655,7 +1822,6 @@
                 estimatedTitle.innerText = 'Estimated Activation Time';
                 arrivalNoticeText.innerHTML = '⏱ <strong>Within 30 Minutes After Payment Verification</strong>';
             } else if (hasPhysical && !hasSubscription) {
-                // ONLY physical products
                 deliveryMethodSectionWrapper.style.display = 'block';
                 digitalNoticeBox.style.display = 'none';
                 if (selectedDeliveryMethod === 'delivery') {
@@ -1671,7 +1837,6 @@
                     Orders are processed after payment verification. You will receive updates through Telegram once your order is confirmed.
                 `;
             } else if (hasPhysical && hasSubscription) {
-                // BOTH physical and digital subscriptions
                 deliveryMethodSectionWrapper.style.display = 'block';
                 digitalNoticeBox.style.display = 'block';
                 document.getElementById('digitalNoticeText').innerHTML = `
@@ -1758,7 +1923,6 @@
                 return;
             }
 
-            // Generate random order ID
             const randomId = '#SPS-' + Math.floor(10000 + Math.random() * 90000);
             document.getElementById('successOrderId').innerText = randomId;
             
@@ -1773,16 +1937,16 @@
                 document.getElementById('successArrivalRow').innerHTML = '<strong>Estimated Arrival:</strong> 1–2 Business Days';
             }
 
-            // Switch to success view inside modal
             document.getElementById('checkoutFormView').style.display = 'none';
             document.getElementById('successView').style.display = 'block';
 
-            // Prepare Telegram data payload
             let totalPrice = 0;
             let itemsSummary = [];
-            for(let id in cart) {
-                totalPrice += cart[id].price * cart[id].qty;
-                itemsSummary.push(`${cart[id].name} (x${cart[id].qty})`);
+            for(let key in cart) {
+                let item = cart[key];
+                totalPrice += item.price * item.qty;
+                let desc = item.category === 'Subscription' ? `${item.name} (${item.durationLabel}) x${item.qty}` : `${item.name} (x${item.qty})`;
+                itemsSummary.push(desc);
             }
 
             const orderData = {
@@ -1798,7 +1962,6 @@
                 user: tg.initDataUnsafe?.user?.username || tg.initDataUnsafe?.user?.id || "guest"
             };
 
-            // Send data back to Telegram bot if available
             try {
                 tg.sendData(JSON.stringify(orderData));
             } catch(e) {
@@ -1816,7 +1979,6 @@
             } catch(e) {}
         }
 
-        // Initial catalog render
         renderProducts('All', '');
     </script>
 </body>
