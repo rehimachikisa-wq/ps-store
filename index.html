@@ -1,210 +1,422 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Super PlayStation Store</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    :root {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
-      --accent-blue: #2563eb;
-      --accent-green: #16a34a;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border-color: #334155;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayStation Storefront</title>
+    <!-- Telegram Web App script -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --tg-theme-bg-color: #121212;
+            --tg-theme-text-color: #ffffff;
+            --tg-theme-hint-color: #aaaaaa;
+            --tg-theme-button-color: #0070d1;
+            --tg-theme-button-text-color: #ffffff;
+            --card-bg: #1e1e1e;
+        }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 100px; }
-    
-    header { padding: 16px; background: #090d16; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 10; }
-    header h1 { font-size: 1.2rem; font-weight: 700; color: #fff; text-align: center; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--tg-theme-bg-color, #121212);
+            color: var(--tg-theme-text-color, #ffffff);
+            margin: 0;
+            padding: 15px;
+            padding-bottom: 80px;
+        }
 
-    .nav-tabs { display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; background-color: var(--bg-color); }
-    .tab-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
-    .tab-btn.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; padding: 16px; }
-    .product-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
-    
-    .product-img { width: 100%; height: 130px; object-fit: contain; background: #0f172a; padding: 8px; }
-    .product-details { padding: 12px; }
-    .product-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
-    .product-desc { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; line-height: 1.3; }
-    .product-price { font-size: 0.9rem; font-weight: 700; color: #4ade80; margin-bottom: 10px; }
+        header h1 {
+            font-size: 24px;
+            margin: 0 0 5px 0;
+            color: #0070d1;
+        }
 
-    .select-btn { background: var(--accent-blue); color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; width: 100%; cursor: pointer; }
-    .select-btn.selected { background: var(--accent-green); }
+        header p {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #aaa);
+            margin: 0;
+        }
 
-    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #090d16; border-top: 1px solid var(--border-color); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
-    .checkout-btn { background: var(--accent-green); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
-    .checkout-btn:disabled { background: #334155; color: var(--text-muted); cursor: not-allowed; }
+        .category-filter {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            scrollbar-width: none;
+        }
 
-    /* Payment Modal Popup */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 20; justify-content: center; align-items: center; padding: 20px; }
-    .modal-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; width: 100%; max-width: 400px; text-align: center; }
-    .modal-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; color: #fff; }
-    .payment-box { background: #0f172a; border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin: 14px 0; text-align: left; font-size: 0.85rem; line-height: 1.6; }
-    .payment-row { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; margin-bottom: 10px; background: #1e293b; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); }
-    .payment-row code { color: #38bdf8; font-weight: bold; }
-    .copy-btn { background: var(--accent-blue); color: #fff; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
-    .copy-btn.copied { background: var(--accent-green); }
-    
-    .chat-btn { display: block; background: var(--accent-blue); color: #fff; text-decoration: none; padding: 12px; border-radius: 8px; font-weight: 700; text-align: center; margin-top: 12px; }
-    .close-btn { background: transparent; color: var(--text-muted); border: none; padding: 8px; font-size: 0.8rem; width: 100%; cursor: pointer; margin-top: 6px; }
-  </style>
+        .category-filter::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-btn {
+            background-color: var(--card-bg);
+            color: var(--tg-theme-text-color);
+            border: 1px solid #333;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .filter-btn.active {
+            background-color: var(--tg-theme-button-color, #0070d1);
+            border-color: var(--tg-theme-button-color, #0070d1);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .product-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid #2a2a2a;
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            background-color: #2a2a2a;
+        }
+
+        .product-info {
+            margin-top: 8px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-desc {
+            font-size: 11px;
+            color: var(--tg-theme-hint-color, #aaa);
+            margin: 0 0 8px 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        .product-price {
+            font-size: 14px;
+            font-weight: bold;
+            color: #4cd964;
+        }
+
+        .add-to-cart-btn {
+            background-color: var(--tg-theme-button-color, #0070d1);
+            color: var(--tg-theme-button-text-color, #fff);
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .cart-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #1e1e1e;
+            border-top: 1px solid #333;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.3);
+            z-index: 100;
+        }
+
+        .cart-info {
+            font-size: 14px;
+            font-weight: 550;
+        }
+
+        .checkout-btn {
+            background-color: #4cd964;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 
-  <header>
-    <h1>🎮 Super PlayStation Store</h1>
-  </header>
+    <header>
+        <h1>PlayStation Store</h1>
+        <p>Consoles, Controllers, Games & Subscriptions</p>
+    </header>
 
-  <div class="nav-tabs">
-    <button class="tab-btn active" onclick="filterCategory('all', this)">All Products</button>
-    <button class="tab-btn" onclick="filterCategory('console', this)">Consoles</button>
-    <button class="tab-btn" onclick="filterCategory('accessory', this)">Controllers</button>
-    <button class="tab-btn" onclick="filterCategory('game', this)">Games</button>
-  </div>
-
-  <div class="product-grid" id="catalog"></div>
-
-  <div class="cart-bar">
-    <div>
-      <div style="font-size: 0.75rem; color: var(--text-muted);">Selected:</div>
-      <div id="cart-item" style="font-size: 0.85rem; font-weight: 600;">None</div>
+    <div class="category-filter" id="categoryFilter">
+        <button class="filter-btn active" onclick="filterProducts('All')">All</button>
+        <button class="filter-btn" onclick="filterProducts('Console')">Consoles</button>
+        <button class="filter-btn" onclick="filterProducts('Controller')">Controllers</button>
+        <button class="filter-btn" onclick="filterProducts('Game')">Games</button>
+        <button class="filter-btn" onclick="filterProducts('Subscription')">Subscriptions</button>
     </div>
-    <button class="checkout-btn" id="checkout-btn" disabled onclick="showPaymentModal()">Confirm Order</button>
-  </div>
 
-  <!-- Payment Modal Window -->
-  <div class="modal-overlay" id="paymentModal">
-    <div class="modal-card">
-      <div class="modal-title">💵 Payment Transfer Info</div>
-      <p style="font-size: 0.85rem; color: #4ade80; font-weight: 600;" id="modal-order-summary"></p>
-      
-      <div class="payment-box">
-        <strong>Please transfer the exact amount:</strong><br><br>
-        
-        🏦 <strong>CBE Bank:</strong>
-        <div class="payment-row">
-          <code id="cbe-num">1000355132351</code>
-          <button class="copy-btn" onclick="copyToClipboard('1000355132351', this)">Copy</button>
-        </div>
-
-        📱 <strong>Telebirr:</strong>
-        <div class="payment-row">
-          <code id="tele-num">0924474307</code>
-          <button class="copy-btn" onclick="copyToClipboard('0924474307', this)">Copy</button>
-        </div>
-
-        📍 <strong>Location:</strong> Around Yeka Abado Gedera Bacha Mall<br>
-        🚚 <strong>Delivery:</strong> Available to Megenagna<br><br>
-        📌 <i>After completing the transfer, click below to send your screenshot directly to us on Telegram:</i>
-      </div>
-
-      <a id="admin-chat-link" href="https://t.me/iamanteneh" target="_blank" class="chat-btn">📩 Send Receipt to @iamanteneh</a>
-      <button class="close-btn" onclick="closePaymentModal()">Close Window</button>
+    <div class="product-grid" id="productGrid">
+        <!-- Products injected via JS -->
     </div>
-  </div>
 
-  <script>
-    const tg = window.Telegram ? window.Telegram.WebApp : null;
-    if (tg) {
-      tg.expand();
-      tg.ready();
-    }
+    <div class="cart-bar" id="cartBar" style="display: none;">
+        <div class="cart-info" id="cartInfo">0 items | Total: $0.00</div>
+        <button class="checkout-btn" onclick="checkoutWithChapa()">Checkout with Chapa</button>
+    </div>
 
-    const products = [
-      { id: "ps4_slim_norm", name: "PS4 Slim 500GB", desc: "Includes 2 original joysticks and 2 games.", price: 58000, cat: "console", img: "https://images.unsplash.com/photo-1507457379470-08b800bebc67?w=400&q=80" },
-      { id: "ps4_slim_jb", name: "PS4 Slim Jailbreak", desc: "Includes 2 original joysticks and 5-10 games installed.", price: 72000, cat: "console", img: "https://images.unsplash.com/photo-1507457379470-08b800bebc67?w=400&q=80" },
-      { id: "ps4_pro_jb", name: "PS4 Pro Jailbreak", desc: "Includes 2 original joysticks and 5-10 games installed.", price: 75000, cat: "console", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&q=80" },
-      { id: "ps5_fat_disc", name: "PS5 Fat (Disc)", desc: "Includes 1 original joystick and Ultra HD Blu-ray disc drive.", price: 165000, cat: "console", img: "https://alfashop.ae/cdn/shop/files/5_9a009a2e-936d-4063-855e-3b3fef949283.jpg?v=1772624786&width=1946" },
-      { id: "ps5_fat_digital", name: "PS5 Fat (Digital)", desc: "Includes 1 original joystick. All-digital edition.", price: 155000, cat: "console", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-72gWT7mc8JLfSrY8RXeTryZx7ZxMeYGc-LfLQ8j62w&s=10" },
-      { id: "ps5_slim_digital", name: "PS5 Slim (Digital)", desc: "Includes 1 original joystick. Sleek compact disc-free gaming.", price: 175000, cat: "console", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-72gWT7mc8JLfSrY8RXeTryZx7ZxMeYGc-LfLQ8j62w&s=10" },
-      { id: "ps5_slim_disc", name: "PS5 Slim (Disc)", desc: "Includes 1 original joystick and Ultra HD Blu-ray disc drive.", price: 185000, cat: "console", img: "https://alfashop.ae/cdn/shop/files/5_9a009a2e-936d-4063-855e-3b3fef949283.jpg?v=1772624786&width=1946" },
-      { id: "ps4_joy", name: "PS4 Controller", desc: "Original DualShock 4 Wireless Joystick.", price: 6000, cat: "accessory", img: "https://images.unsplash.com/photo-1592840496694-26d035b52b48?w=400&q=80" },
-      { id: "ps5_joy", name: "PS5 Controller", desc: "Original DualSense Wireless Joystick.", price: 13000, cat: "accessory", img: "https://m.media-amazon.com/images/I/51RYtih7YJL._AC_UF1000,1000_QL80_.jpg" },
-      { id: "ps4_fc24", name: "EA Sports FC 24 (PS4)", desc: "Original Game Disc for PlayStation 4.", price: 4000, cat: "game", img: "https://images.g2a.com/360x600/1x1x1/ea-sports-fc-24-standard-edition-ps4-psn-key-global-i10000340096061/82daebf518c24441bd6bc6ec" }
-    ];
+    <script>
+        // Initialize Telegram Web App
+        let tg = window.Telegram.WebApp;
+        tg.expand();
 
-    let selectedProduct = null;
+        // Product Inventory (Including correct hardware variants and new PS Plus plans)
+        const products = [
+            {
+                id: "ps5-console",
+                name: "PlayStation 5 Console",
+                category: "Console",
+                price: 499.99,
+                description: "Brand new PS5 console with ultra-high speed SSD and DualSense wireless controller included.",
+                image: "images/ps5.jpg"
+            },
+            {
+                id: "ps4-slim-console",
+                name: "PlayStation 4 Slim Console",
+                category: "Console",
+                price: 299.99,
+                description: "Sleek PS4 Slim console delivering awesome gaming power with 1TB storage.",
+                image: "images/ps4-slim.jpg"
+            },
+            {
+                id: "ps5-controller",
+                name: "PS5 DualSense Wireless Controller",
+                category: "Controller",
+                price: 69.99,
+                description: "Official Sony DualSense wireless controller for PlayStation 5 with haptic feedback.",
+                image: "images/ps5-controller.jpg"
+            },
+            {
+                id: "ps4-controller",
+                name: "PS4 DualShock 4 Controller",
+                category: "Controller",
+                price: 59.99,
+                description: "Original DualShock 4 wireless controller for PlayStation 4 systems.",
+                image: "images/ps4-controller.jpg"
+            },
+            {
+                id: "fc25-game",
+                name: "EA Sports FC 25 (PS5)",
+                category: "Game",
+                price: 69.99,
+                description: "The newest football experience featuring HyperMotionV technology.",
+                image: "images/fc25.jpg"
+            },
+            // --- PS PLUS SUBSCRIPTION PLANS ---
+            {
+                id: "ps-plus-essential-1m",
+                name: "PS Plus Essential (1 Month)",
+                category: "Subscription",
+                price: 20.99,
+                description: "Core features including online multiplayer access, monthly downloadable games, exclusive PS Store discounts, and 100GB cloud storage.",
+                image: "images/ps-plus-essential.jpg"
+            },
+            {
+                id: "ps-plus-extra-1m",
+                name: "PS Plus Extra (1 Month)",
+                category: "Subscription",
+                price: 26.99,
+                description: "Includes Essential features plus access to a massive game catalog of over 400 PS4 and PS5 titles, featuring blockbuster hits like The Last of Us Part I and indie favorites.",
+                image: "images/ps-plus-extra.jpg"
+            },
+            {
+                id: "ps-plus-deluxe-1m",
+                name: "PS Plus Deluxe (1 Month)",
+                category: "Subscription",
+                price: 29.99,
+                description: "The ultimate pass including Essential & Extra perks, plus the Classics retro catalog, time-limited game trials, and access to masterpieces like The Last of Us Part I and The Last of Us Part II Remastered.",
+                image: "images/ps-plus-deluxe.jpg"
+            },
+            {
+                id: "ps-plus-essential-3m",
+                name: "PS Plus Essential (3 Months)",
+                category: "Subscription",
+                price: 37.99,
+                description: "3 months of core features including online multiplayer access, monthly free downloadable games, exclusive discounts, and 100GB cloud storage.",
+                image: "images/ps-plus-essential-3m.jpg"
+            },
+            {
+                id: "ps-plus-extra-3m",
+                name: "PS Plus Extra (3 Months)",
+                category: "Subscription",
+                price: 49.99,
+                description: "3 months of Essential features plus unlimited access to over 400 PS4 and PS5 catalog titles, including hits like The Last of Us Part I.",
+                image: "images/ps-plus-extra-3m.jpg"
+            },
+            {
+                id: "ps-plus-deluxe-3m",
+                name: "PS Plus Deluxe (3 Months)",
+                category: "Subscription",
+                price: 59.99,
+                description: "3 months of the ultimate package: Extra catalog games, classic retro games, game trials, and titles like The Last of Us Part I and The Last of Us Part II Remastered.",
+                image: "images/ps-plus-deluxe-3m.jpg"
+            },
+            {
+                id: "ps-plus-essential-12m",
+                name: "PS Plus Essential (12 Months)",
+                category: "Subscription",
+                price: 89.99,
+                description: "A full year of online multiplayer, monthly downloadable games, exclusive store discounts, and 100GB cloud storage at the best value.",
+                image: "images/ps-plus-essential-12m.jpg"
+            },
+            {
+                id: "ps-plus-extra-12m",
+                name: "PS Plus Extra (12 Months)",
+                category: "Subscription",
+                price: 145.99,
+                description: "A full year of Essential perks plus 365 days of access to a massive library of 400+ games, featuring blockbuster titles like The Last of Us Part I.",
+                image: "images/ps-plus-extra-12m.jpg"
+            },
+            {
+                id: "ps-plus-deluxe-12m",
+                name: "PS Plus Deluxe (12 Months)",
+                category: "Subscription",
+                price: 169.99,
+                description: "The ultimate 1-year pass: full access to the Extra library, retro Classics catalog, game trials, and top-tier masterpieces like The Last of Us Part I and The Last of Us Part II Remastered.",
+                image: "images/ps-plus-deluxe-12m.jpg"
+            }
+        ];
 
-    function renderCatalog(filter = 'all') {
-      const container = document.getElementById('catalog');
-      container.innerHTML = '';
-      const items = filter === 'all' ? products : products.filter(p => p.cat === filter);
+        let cart = {};
 
-      items.forEach(p => {
-        const isSelected = selectedProduct && selectedProduct.id === p.id;
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = `
-          <img src="${p.img}" class="product-img" alt="${p.name}">
-          <div class="product-details">
-            <div class="product-title">${p.name}</div>
-            <div class="product-desc">${p.desc}</div>
-            <div class="product-price">${p.price.toLocaleString()} ETB</div>
-            <button class="select-btn ${isSelected ? 'selected' : ''}" onclick="selectItem('${p.id}')">
-              ${isSelected ? '✓ Selected' : 'Select'}
-            </button>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
+        function renderProducts(filterCategory = 'All') {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
 
-    function filterCategory(category, btnElement) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      btnElement.classList.add('active');
-      renderCatalog(category);
-    }
+            const filtered = filterCategory === 'All' 
+                ? products 
+                : products.filter(p => p.category === filterCategory);
 
-    function selectItem(productId) {
-      selectedProduct = products.find(p => p.id === productId);
-      document.getElementById('cart-item').innerText = `${selectedProduct.name} (${selectedProduct.price.toLocaleString()} ETB)`;
-      
-      const btn = document.getElementById('checkout-btn');
-      btn.disabled = false;
-      btn.innerText = `Order for ${selectedProduct.price.toLocaleString()} ETB`;
-      
-      const activeTab = document.querySelector('.tab-btn.active');
-      let currentFilter = 'all';
-      if (activeTab.getAttribute('onclick').includes('console')) currentFilter = 'console';
-      else if (activeTab.getAttribute('onclick').includes('accessory')) currentFilter = 'accessory';
-      else if (activeTab.getAttribute('onclick').includes('game')) currentFilter = 'game';
+            filtered.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/150?text=PlayStation'">
+                    <div class="product-info">
+                        <div>
+                            <div class="product-title">${product.name}</div>
+                            <div class="product-desc">${product.description}</div>
+                        </div>
+                        <div class="product-footer">
+                            <span class="product-price">$${product.price.toFixed(2)}</span>
+                            <button class="add-to-cart-btn" onclick="addToCart('${product.id}')">Add</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
 
-      renderCatalog(currentFilter);
-    }
+        function filterProducts(category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText.toLowerCase() === category.toLowerCase() || (category === 'All' && btn.innerText === 'All')) {
+                    btn.classList.add('active');
+                }
+            });
+            renderProducts(category);
+        }
 
-    function showPaymentModal() {
-      if (!selectedProduct) return;
-      document.getElementById('modal-order-summary').innerText = `Order: ${selectedProduct.name} (${selectedProduct.price.toLocaleString()} ETB)`;
-      document.getElementById('paymentModal').style.display = 'flex';
-    }
+        function addToCart(productId) {
+            if(cart[productId]) {
+                cart[productId].qty += 1;
+            } else {
+                const product = products.find(p => p.id === productId);
+                cart[productId] = { ...product, qty: 1 };
+            }
+            updateCartBar();
+        }
 
-    function closePaymentModal() {
-      document.getElementById('paymentModal').style.display = 'none';
-      if (tg) tg.close();
-    }
+        function updateCartBar() {
+            const cartBar = document.getElementById('cartBar');
+            const cartInfo = document.getElementById('cartInfo');
+            
+            let totalItems = 0;
+            let totalPrice = 0;
 
-    function copyToClipboard(text, btnElement) {
-      navigator.clipboard.writeText(text).then(() => {
-        const originalText = btnElement.innerText;
-        btnElement.innerText = 'Copied!';
-        btnElement.classList.add('copied');
-        setTimeout(() => {
-          btnElement.innerText = originalText;
-          btnElement.classList.remove('copied');
-        }, 2000);
-      }).catch(err => {
-        console.error('Failed to copy: ', err);
-      });
-    }
+            for(let id in cart) {
+                totalItems += cart[id].qty;
+                totalPrice += cart[id].price * cart[id].qty;
+            }
 
-    renderCatalog();
-  </script>
+            if(totalItems > 0) {
+                cartBar.style.display = 'flex';
+                cartInfo.innerText = `${totalItems} item(s) | Total: $${totalPrice.toFixed(2)}`;
+            } else {
+                cartBar.style.display = 'none';
+            }
+        }
+
+        function checkoutWithChapa() {
+            let totalPrice = 0;
+            let itemsSummary = [];
+            
+            for(let id in cart) {
+                totalPrice += cart[id].price * cart[id].qty;
+                itemsSummary.push(`${cart[id].name} (x${cart[id].qty})`);
+            }
+
+            // Send data back to Telegram bot or trigger Chapa payment handler
+            const orderData = {
+                items: itemsSummary,
+                total: totalPrice,
+                user: tg.initDataUnsafe?.user?.username || tg.initDataUnsafe?.user?.id || "guest"
+            };
+
+            tg.sendData(JSON.stringify(orderData));
+            tg.close();
+        }
+
+        // Initial render
+        renderProducts('All');
+    </script>
 </body>
 </html>
