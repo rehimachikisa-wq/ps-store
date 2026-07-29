@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlayStation Store & Game Zone</title>
-    <!-- Telegram Web App Script -->
+    <title>Super PS Store</title>
+    <!-- Telegram Web App script -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -21,72 +21,84 @@
             background-color: var(--tg-theme-bg-color, #121212);
             color: var(--tg-theme-text-color, #ffffff);
             margin: 0;
-            padding: 0;
-            padding-bottom: 80px;
+            padding: 15px;
+            padding-bottom: 100px;
         }
 
         header {
-            background-color: #003087;
-            padding: 16px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            margin-bottom: 15px;
         }
 
         header h1 {
-            margin: 0;
-            font-size: 20px;
-            letter-spacing: 1px;
-            color: #fff;
+            font-size: 24px;
+            margin: 0 0 5px 0;
+            color: #0070d1;
         }
 
         header p {
-            margin: 4px 0 0 0;
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #aaa);
+            margin: 0;
+        }
+
+        .store-location-banner {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
             font-size: 12px;
-            color: #d0d0d0;
+            color: #4cd964;
+            margin-bottom: 15px;
         }
 
-        .container {
-            padding: 12px;
-            max-width: 600px;
-            margin: 0 auto;
+        /* Search Bar & Filters */
+        .search-container {
+            margin-bottom: 12px;
         }
 
-        .search-bar {
+        .search-input {
             width: 100%;
             padding: 10px 14px;
-            border-radius: 8px;
+            background-color: var(--card-bg);
             border: 1px solid #333;
-            background-color: #222;
             color: #fff;
+            border-radius: 20px;
             font-size: 14px;
-            margin-bottom: 14px;
             box-sizing: border-box;
         }
 
-        .categories {
+        .category-filter {
             display: flex;
             gap: 8px;
             overflow-x: auto;
-            padding-bottom: 8px;
-            margin-bottom: 14px;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            scrollbar-width: none;
         }
 
-        .category-btn {
-            background: #2a2a2a;
-            border: none;
-            color: #fff;
+        .category-filter::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-btn {
+            background-color: var(--card-bg);
+            color: var(--tg-theme-text-color);
+            border: 1px solid #333;
             padding: 6px 14px;
-            border-radius: 16px;
+            border-radius: 20px;
             font-size: 13px;
-            cursor: pointer;
             white-space: nowrap;
-            transition: background 0.2s;
+            cursor: pointer;
         }
 
-        .category-btn.active {
-            background: var(--tg-theme-button-color, #0070d1);
+        .filter-btn.active {
+            background-color: var(--tg-theme-button-color, #0070d1);
+            border-color: var(--tg-theme-button-color, #0070d1);
         }
 
+        /* Product Grid */
         .product-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -96,114 +108,366 @@
         .product-card {
             background-color: var(--card-bg);
             border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            border: 1px solid #2a2a2a;
-        }
-
-        .product-img-container {
-            width: 100%;
-            height: 130px;
-            background-color: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .product-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .product-info {
             padding: 10px;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid #2a2a2a;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .badge-best { background-color: #f1c40f; color: #000; }
+        .badge-limited { background-color: #e74c3c; color: #fff; }
+
+        .fav-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.6);
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .fav-btn.active { color: #e74c3c; }
+
+        .product-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            background-color: #2a2a2a;
+        }
+
+        .product-info {
+            margin-top: 8px;
             flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .product-title {
             font-size: 14px;
             font-weight: 600;
             margin: 0 0 4px 0;
-            line-height: 1.2;
-        }
-
-        .product-desc {
-            font-size: 11px;
-            color: var(--tg-theme-hint-color, #aaa);
-            margin: 0 0 8px 0;
-            flex-grow: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .product-footer {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: auto;
+            margin-top: 8px;
         }
 
         .product-price {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
-            color: #4cd137;
+            color: #4cd964;
         }
 
-        .add-btn {
+        .quick-add-btn {
             background-color: var(--tg-theme-button-color, #0070d1);
-            color: var(--tg-theme-button-text-color, #fff);
+            color: #fff;
             border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            font-size: 16px;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
             cursor: pointer;
+        }
+
+        /* Views management */
+        .view-section {
+            display: none;
+        }
+        .view-section.active {
+            display: block;
+        }
+
+        /* Product Detail View */
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--tg-theme-button-color, #0070d1);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+            margin-bottom: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .detail-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #2a2a2a;
+            margin-bottom: 12px;
+        }
+
+        .slider-track {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .slider-track img {
+            min-width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 8px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            cursor: pointer;
+        }
+        .dot.active { background: #fff; }
+
+        .detail-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0 0 6px 0;
+        }
+
+        .detail-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4cd964;
+            margin-bottom: 12px;
+        }
+
+        .info-block {
+            margin-bottom: 12px;
+            background-color: #242424;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .info-block h3 {
+            margin: 0 0 6px 0;
+            font-size: 13px;
+            color: #0070d1;
+            text-transform: uppercase;
+        }
+
+        .info-block ul {
+            margin: 0;
+            padding-left: 16px;
+            font-size: 12px;
+            color: #ccc;
+            line-height: 1.5;
+        }
+
+        .info-block ul li {
+            margin-bottom: 3px;
+        }
+
+        /* Quantity & Cart actions inside Detail View */
+        .qty-action-box {
+            background-color: #262626;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .qty-row {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
         }
 
-        /* Cart Drawer / Bottom Bar */
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 3px 8px;
+        }
+
+        .qty-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .qty-display {
+            font-size: 14px;
+            font-weight: 600;
+            min-width: 15px;
+            text-align: center;
+        }
+
+        .add-remove-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .main-action-btn {
+            width: 100%;
+            background-color: var(--tg-theme-button-color, #0070d1);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .remove-cart-btn {
+            background: none;
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Detailed Cart Floating Bar */
         .cart-bar {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background-color: #1b1b1b;
+            background-color: #1a1a1a;
             border-top: 1px solid #333;
-            padding: 12px 16px;
+            padding: 12px 15px;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
+            z-index: 100;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .cart-header-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.5);
-            z-index: 1000;
+            cursor: pointer;
         }
 
-        .cart-info {
-            font-size: 14px;
-        }
-
-        .cart-total {
+        .cart-title-summary {
+            font-size: 15px;
             font-weight: bold;
-            color: #4cd137;
+            color: #fff;
+        }
+
+        .cart-toggle-indicator {
+            font-size: 12px;
+            color: var(--tg-theme-button-color, #0070d1);
+        }
+
+        .cart-expanded-content {
+            display: none;
+            margin-top: 10px;
+            border-top: 1px solid #333;
+            padding-top: 10px;
+        }
+
+        .cart-expanded-content.open {
+            display: block;
+        }
+
+        .cart-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            margin-bottom: 8px;
+            color: #ccc;
+        }
+
+        .cart-divider {
+            border: none;
+            border-top: 1px dashed #444;
+            margin: 8px 0;
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 12px;
         }
 
         .checkout-btn {
-            background-color: #4cd137;
+            width: 100%;
+            background-color: #4cd964;
             color: #000;
             border: none;
-            padding: 10px 20px;
+            padding: 11px;
             border-radius: 8px;
             font-weight: bold;
             font-size: 14px;
             cursor: pointer;
+            text-align: center;
         }
 
-        /* Modal Overlay for Cart Details */
+        /* Modal / Checkout Flow Styling */
         .modal {
             display: none;
             position: fixed;
@@ -211,327 +475,1134 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 2000;
+            background-color: rgba(0,0,0,0.85);
+            z-index: 200;
             justify-content: center;
-            align-items: flex-end;
+            align-items: center;
+            padding: 15px;
+            box-sizing: border-box;
+            overflow-y: auto;
         }
 
         .modal-content {
             background-color: #1e1e1e;
-            width: 100%;
-            max-height: 80vh;
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
+            border-radius: 12px;
             padding: 20px;
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid #333;
+            margin: auto;
             box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
         }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .modal-content h2 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #0070d1;
+            text-align: center;
+        }
+
+        .checkout-section-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #0070d1;
+            text-transform: uppercase;
+            margin: 15px 0 8px 0;
             border-bottom: 1px solid #333;
-            padding-bottom: 10px;
+            padding-bottom: 4px;
+        }
+
+        .delivery-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
             margin-bottom: 10px;
         }
 
-        .modal-header h3 {
-            margin: 0;
-            font-size: 16px;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: #aaa;
-            font-size: 18px;
+        .delivery-card {
+            background-color: #262626;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 10px;
             cursor: pointer;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
         }
 
-        .cart-items-list {
-            overflow-y: auto;
-            max-height: 40vh;
-            margin-bottom: 14px;
+        .delivery-card.selected {
+            border-color: #0070d1;
+            background-color: #1a2634;
         }
 
-        .cart-item-row {
+        .delivery-card input {
+            margin-top: 2px;
+        }
+
+        .delivery-card-info h4 {
+            margin: 0 0 2px 0;
+            font-size: 13px;
+            color: #fff;
+        }
+
+        .delivery-card-info p {
+            margin: 0;
+            font-size: 11px;
+            color: #aaa;
+            line-height: 1.3;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 4px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px 10px;
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+
+        .arrival-notice {
+            background-color: #242424;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #ccc;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .order-summary-box {
+            background-color: #242424;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            color: #ccc;
+        }
+
+        .summary-total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            margin-top: 6px;
+        }
+
+        .payment-option {
+            background-color: #2a2a2a;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .payment-option h3 {
+            margin: 0 0 4px 0;
+            font-size: 13px;
+            color: #4cd964;
+        }
+
+        .payment-detail-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #2a2a2a;
-            font-size: 13px;
+            font-size: 12px;
+            margin-top: 2px;
+            color: #ccc;
         }
 
-        .cart-item-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .qty-btn {
-            background: #333;
+        .copy-btn {
+            background-color: #0070d1;
             color: #fff;
             border: none;
-            width: 22px;
-            height: 22px;
+            padding: 3px 8px;
             border-radius: 4px;
+            font-size: 11px;
             cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 12px;
+            color: #ccc;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-group input {
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .disclaimer-box {
+            background-color: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #e74c3c;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .close-modal-btn {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        /* Success View inside Modal */
+        #successView {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        #successView h2 {
+            color: #4cd964;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .success-card {
+            background-color: #242424;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 15px 0;
+            text-align: left;
+            font-size: 12px;
+            color: #ccc;
+            line-height: 1.5;
+        }
+
+        .success-card strong {
+            color: #fff;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>PlayStation Store & Game Zone</h1>
-        <p>Consoles, Joysticks & Accessories</p>
-    </header>
+    <!-- CATALOG VIEW -->
+    <div id="catalogView" class="view-section active">
+        <header>
+            <h1>Super PS Store</h1>
+            <p>Consoles, Controllers, Games & Subscriptions</p>
+        </header>
 
-    <div class="container">
-        <input type="text" id="searchBar" class="search-bar" placeholder="Search gear or games..." oninput="filterProducts()">
+        <div class="store-location-banner">
+            📍 <strong>Store Location:</strong> Yeka Abado, Gedera Bacha Mall, First Floor
+        </div>
 
-        <div class="categories" id="categoryContainer">
-            <button class="category-btn active" onclick="setCategory('All', this)">All</button>
-            <button class="category-btn" onclick="setCategory('Consoles', this)">Consoles</button>
-            <button class="category-btn" onclick="setCategory('Controllers', this)">Controllers</button>
-            <button class="category-btn" onclick="setCategory('Accessories', this)">Accessories</button>
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search consoles, games, controllers..." oninput="handleSearch(this.value)">
+        </div>
+
+        <div class="category-filter" id="categoryFilter">
+            <button class="filter-btn active" onclick="filterProducts('All')">All</button>
+            <button class="filter-btn" onclick="filterProducts('Console')">Consoles</button>
+            <button class="filter-btn" onclick="filterProducts('Controller')">Controllers</button>
+            <button class="filter-btn" onclick="filterProducts('Game')">Games</button>
+            <button class="filter-btn" onclick="filterProducts('Subscription')">Subscriptions</button>
         </div>
 
         <div class="product-grid" id="productGrid">
-            <!-- Dynamic Products Generated by JS -->
+            <!-- Products injected via JS -->
         </div>
     </div>
 
-    <!-- Bottom Cart Summary Bar -->
-    <div class="cart-bar" id="cartBar" style="display: none;" onclick="openCartModal()">
-        <div class="cart-info">
-            <span id="cartCount">0 items</span> | <span class="cart-total" id="cartTotal">0 ETB</span>
+    <!-- PRODUCT DETAIL VIEW -->
+    <div id="detailView" class="view-section">
+        <button class="back-btn" onclick="showCatalogView()">← Back to Store</button>
+
+        <div class="detail-card">
+            <!-- Image Slider -->
+            <div class="slider-container" id="sliderContainer">
+                <div class="slider-track" id="sliderTrack">
+                    <!-- Slider images injected via JS -->
+                </div>
+                <div class="slider-dots" id="sliderDots"></div>
+            </div>
+
+            <h1 class="detail-title" id="detailTitle"></h1>
+            <div class="detail-price" id="detailPrice"></div>
+
+            <!-- Description Breakdown -->
+            <div class="info-block" id="includedBlock">
+                <h3>What's Included</h3>
+                <ul id="includedList"></ul>
+            </div>
+
+            <div class="info-block" id="featuresBlock">
+                <h3>Features</h3>
+                <ul id="featuresList"></ul>
+            </div>
+
+            <div class="info-block" id="conditionBlock">
+                <h3>Condition & Warranty</h3>
+                <ul id="conditionList">
+                    <li>✔ Slightly Used & Tested</li>
+                    <li>✔ Pristine Condition</li>
+                    <li>🛡 Store Warranty Available</li>
+                </ul>
+            </div>
+
+            <div class="info-block">
+                <h3>🚚 Delivery Information</h3>
+                <ul style="margin:0; padding-left:16px; font-size:12px; color:#ccc;">
+                    <li>Free delivery to Megenagna only. Other areas may incur a delivery fee.</li>
+                    <li>Store pickup available at Yeka Abado, Gedera Bacha Mall, 1st Floor</li>
+                </ul>
+            </div>
+
+            <!-- Quantity & Actions Box -->
+            <div class="qty-action-box">
+                <div class="qty-row" style="margin-bottom: 10px;">
+                    <span style="font-size: 13px; color: #aaa;" id="qtyLabelText">Quantity</span>
+                    <div class="quantity-controls">
+                        <button class="qty-btn" onclick="adjustDetailQty(-1)">-</button>
+                        <span class="qty-display" id="detailQtyDisplay">1</span>
+                        <button class="qty-btn" onclick="adjustDetailQty(1)">+</button>
+                    </div>
+                </div>
+                <div class="add-remove-container" id="detailActionButtons">
+                    <!-- Dynamic Add/Remove button content -->
+                </div>
+            </div>
         </div>
-        <button class="checkout-btn">View Cart</button>
     </div>
 
-    <!-- Cart Modal -->
-    <div class="modal" id="cartModal">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h3>Your Cart</h3>
-                <button class="close-modal" onclick="closeCartModal()">✕</button>
+    <!-- IMPROVED EXPANDABLE CART BAR -->
+    <div class="cart-bar" id="cartBar" style="display: none;">
+        <div class="cart-header-bar" onclick="toggleCartExpand()">
+            <div class="cart-title-summary" id="cartSummaryTitle">🛒 Cart (0)</div>
+            <div class="cart-toggle-indicator" id="cartToggleText">View Details ▴</div>
+        </div>
+        
+        <div class="cart-expanded-content" id="cartExpandedContent">
+            <div id="cartItemList"></div>
+            <hr class="cart-divider">
+            <div class="cart-total-row">
+                <span>Total</span>
+                <span id="cartTotalPrice">0 ETB</span>
             </div>
-            <div class="cart-items-list" id="cartItemsList">
-                <!-- Cart items populate here -->
+            <button class="checkout-btn" onclick="openCheckoutModal()">Checkout</button>
+        </div>
+    </div>
+
+    <!-- Checkout & Payment Modal -->
+    <div class="modal" id="checkoutModal">
+        <div class="modal-content" id="modalContainer">
+            <!-- Checkout Form Content -->
+            <div id="checkoutFormView">
+                <h2>Checkout & Delivery</h2>
+
+                <div class="checkout-section-title">Delivery Method</div>
+                <div class="delivery-options">
+                    <label class="delivery-card selected" id="cardStorePickup" onclick="setDeliveryMethod('pickup')">
+                        <input type="radio" name="deliveryMethod" value="pickup" checked>
+                        <div class="delivery-card-info">
+                            <h4>Store Pickup — FREE</h4>
+                            <p>Pickup at Yeka Abado, Gedera Bacha Mall, First Floor</p>
+                        </div>
+                    </label>
+
+                    <label class="delivery-card" id="cardHomeDelivery" onclick="setDeliveryMethod('delivery')">
+                        <input type="radio" name="deliveryMethod" value="delivery">
+                        <div class="delivery-card-info">
+                            <h4>Home Delivery</h4>
+                            <p>FREE delivery to Megenagna only. Other areas may incur a delivery fee depending on location.</p>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Address Fields (Shown only on Home Delivery) -->
+                <div id="addressSection" style="display: none;">
+                    <div class="checkout-section-title">Delivery Address</div>
+                    <div class="form-group">
+                        <label for="subCity">Sub City</label>
+                        <input type="text" id="subCity" placeholder="e.g., Bole, Yeka, Kirkos">
+                    </div>
+                    <div class="form-group">
+                        <label for="landmark">Area / Landmark</label>
+                        <input type="text" id="landmark" placeholder="e.g., Megenagna, Lem Hotel">
+                    </div>
+                    <div class="form-group">
+                        <label for="houseNum">House / Building (Optional)</label>
+                        <input type="text" id="houseNum" placeholder="e.g., Building Name, Apt #">
+                    </div>
+                </div>
+
+                <div class="checkout-section-title">Estimated Arrival</div>
+                <div class="arrival-notice">
+                    🕒 <strong>Estimated Delivery Time:</strong> 1–2 Business Days<br>
+                    Orders are processed after payment verification. You will receive updates through Telegram once your order is confirmed.
+                </div>
+
+                <div class="checkout-section-title">Order Summary</div>
+                <div class="order-summary-box" id="checkoutOrderSummaryList">
+                    <!-- Dynamic summary rows -->
+                </div>
+
+                <div class="checkout-section-title">Payment Information</div>
+                <p style="font-size: 12px; color: #aaa; margin: 0 0 8px 0;">Transfer total amount to one of the accounts below:</p>
+                
+                <div class="payment-option">
+                    <h3>Telebirr</h3>
+                    <div class="payment-detail-row">
+                        <span><strong>Phone:</strong> 0924474307</span>
+                        <button class="copy-btn" onclick="copyText('0924474307', this)">Copy</button>
+                    </div>
+                    <div class="payment-detail-row">
+                        <span><strong>Name:</strong> Anteneh</span>
+                    </div>
+                </div>
+
+                <div class="payment-option">
+                    <h3>Commercial Bank of Ethiopia (CBE)</h3>
+                    <div class="payment-detail-row">
+                        <span><strong>Account:</strong> 1000355132351</span>
+                        <button class="copy-btn" onclick="copyText('1000355132351', this)">Copy</button>
+                    </div>
+                    <div class="payment-detail-row">
+                        <span><strong>Name:</strong> Anteneh Tesfaye</span>
+                    </div>
+                </div>
+
+                <div class="disclaimer-box">
+                    Please send your payment receipt screenshot directly to <strong>@iamanteneh</strong> on Telegram after confirming.
+                </div>
+
+                <div class="checkout-section-title">Confirmation</div>
+                <label class="checkbox-group">
+                    <input type="checkbox" id="checkInfoCorrect">
+                    <span>I confirm that my delivery information is correct.</span>
+                </label>
+                <label class="checkbox-group">
+                    <input type="checkbox" id="checkPaymentUnderstand">
+                    <span>I understand that orders are processed after payment verification.</span>
+                </label>
+
+                <button class="checkout-btn" style="margin-top: 12px;" onclick="confirmOrder()">🛒 Confirm Order</button>
+                <button class="close-modal-btn" onclick="closeCheckoutModal()">Cancel</button>
             </div>
-            <button class="checkout-btn" style="width: 100%; padding: 12px;" onclick="checkoutWithChapa()">Proceed to Checkout (Chapa)</button>
+
+            <!-- Success View Content -->
+            <div id="successView" style="display: none;">
+                <h2>🎉 Thank You!</h2>
+                <p style="font-size: 13px; color: #aaa; margin: 0 0 10px 0;">Your order has been received.</p>
+                
+                <div class="success-card">
+                    <div><strong>Order ID:</strong> <span id="successOrderId">#SPS-48291</span></div>
+                    <div style="margin-top: 4px;"><strong>Delivery:</strong> <span id="successDeliveryText">Store Pickup (FREE)</span></div>
+                    <div style="margin-top: 4px;"><strong>Estimated Arrival:</strong> 1–2 Business Days</div>
+                    <div style="margin-top: 8px; color: #4cd964;">We'll notify you on Telegram as soon as your payment is verified.</div>
+                </div>
+
+                <button class="checkout-btn" onclick="finishAndClose()">Continue Shopping</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Initialize Telegram Web App
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Product Catalog Data with Corrected Images and PS4 Pro Image Update
         const products = [
             {
-                id: "ps5-console",
-                name: "PlayStation 5 Console",
-                price: 65000,
-                category: "Consoles",
-                image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=500&q=80",
-                description: "PS5 Console Standard Edition with Ultra-High Speed SSD"
-            },
-            {
                 id: "ps4-slim",
-                name: "PlayStation 4 Slim",
-                price: 28000,
-                category: "Consoles",
-                image: "https://images.unsplash.com/photo-1507457373958-b7ebc787593e?auto=format&fit=crop&w=500&q=80",
-                description: "500GB / 1TB Sleek Console with DualShock 4 Controller"
+                name: "PlayStation 4 Slim 500GB",
+                category: "Console",
+                price: 58000.00,
+                badge: "Best Seller",
+                badgeClass: "badge-best",
+                images: [
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMWsXwevALN-wIkxdDUw6DT9E2aAPs37v8JSioav6qbj56siN4TxQ4hLqG&s=10",
+                    "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "2 Slightly Used Sony DualShock 4 Wireless Controllers",
+                    "HDMI Cable",
+                    "Power Cable",
+                    "All Necessary Accessories"
+                ],
+                features: [
+                    "⚡ 500GB High Storage",
+                    "🎮 Perfect for FIFA, GTA V & COD",
+                    "🌐 Built-in Wi-Fi & Ethernet",
+                    "🔊 Immersive Stereo Sound"
+                ]
             },
             {
-                id: "ps4-pro",
-                name: "PlayStation 4 Pro",
-                price: 35000,
-                category: "Consoles",
-                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7gXWPhy2UvS63DZs9IdLxh5M0GjqQg-gHXyl2vMhkyeLeYdviYprEEEDC&s=10",
-                description: "1TB 4K-Enabled Gaming Console with DualShock 4 Controller"
+                id: "ps4-slim-jb",
+                name: "PlayStation 4 Slim Jailbreak",
+                category: "Console",
+                price: 72000.00,
+                badge: "Limited Stock",
+                badgeClass: "badge-limited",
+                images: [
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTV3KWfjQrz3XDip3ubc1fOzoeEwSuX9RFa5W4igcIWy1-rcnPXM17BhMk&s=10",
+                    "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "2 Slightly Used Sony DualShock 4 Controllers",
+                    "HDMI Cable & Power Cable",
+                    "Pre-installed Game Library"
+                ],
+                features: [
+                    "⚡ Hundreds of Pre-installed Games",
+                    "🎮 Ready-to-play Setup",
+                    "🌐 No internet required for loaded games"
+                ]
             },
             {
-                id: "dualSense-controller",
-                name: "DualSense Wireless Controller",
-                price: 6500,
-                category: "Controllers",
-                image: "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=500&q=80",
-                description: "Official PS5 Controller with haptic feedback & adaptive triggers"
+                id: "ps4-pro-jb",
+                name: "PlayStation 4 Pro Jailbreak",
+                category: "Console",
+                price: 75000.00,
+                badge: "Best Seller",
+                badgeClass: "badge-best",
+                images: [
+                    "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80",
+                    "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "2 Slightly Used Sony DualShock 4 Controllers",
+                    "HDMI Cable & Power Cable"
+                ],
+                features: [
+                    "⚡ Enhanced 4K Gaming Graphics",
+                    "🎮 High Performance System",
+                    "🌐 Pre-loaded Game Collection"
+                ]
             },
             {
-                id: "dualShock-4",
-                name: "DualShock 4 Controller",
-                price: 3500,
-                category: "Controllers",
-                image: "https://images.unsplash.com/photo-1592840496694-26d035b52b48?auto=format&fit=crop&w=500&q=80",
-                description: "Official Wireless Controller for PlayStation 4"
+                id: "ps5-fat-digital",
+                name: "PlayStation 5 Fat Digital Edition",
+                category: "Console",
+                price: 155000.00,
+                badge: "Best Seller",
+                badgeClass: "badge-best",
+                images: [
+                    "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=600&q=80",
+                    "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "1 Slightly Used Sony DualSense Wireless Controller",
+                    "HDMI 2.1 Cable",
+                    "Power Cable & Base Stand"
+                ],
+                features: [
+                    "⚡ Ultra-Fast SSD Loading",
+                    "🎮 4K Gaming at up to 120Hz",
+                    "🔊 Tempest 3D AudioTech"
+                ]
             },
             {
-                id: "pulse-3d",
-                name: "Pulse 3D Wireless Headset",
-                price: 9500,
-                category: "Accessories",
-                image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=500&q=80",
-                description: "Headset fine-tuned for 3D Audio on PS5 consoles"
+                id: "ps5-fat-disc",
+                name: "PlayStation 5 Fat Disc Edition",
+                category: "Console",
+                price: 165000.00,
+                badge: "Limited Stock",
+                badgeClass: "badge-limited",
+                images: [
+                    "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=600&q=80",
+                    "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "1 Slightly Used Sony DualSense Controller",
+                    "Ultra HD Blu-ray Disc Drive",
+                    "HDMI & Power Cables"
+                ],
+                features: [
+                    "⚡ Supports Physical Discs & Digital Downloads",
+                    "🎮 Ultra-Fast SSD Storage",
+                    "🌐 Ray Tracing Support"
+                ]
             },
             {
-                id: "charging-dock",
-                name: "DualSense Charging Station",
-                price: 3200,
-                category: "Accessories",
-                image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=500&q=80",
-                description: "Dock up to two DualSense wireless controllers easily"
+                id: "ps5-slim-digital",
+                name: "PlayStation 5 Slim Digital Edition",
+                category: "Console",
+                price: 175000.00,
+                badge: "Best Seller",
+                badgeClass: "badge-best",
+                images: [
+                    "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=600&q=80",
+                    "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "1 Slightly Used Sony DualSense Controller",
+                    "HDMI Cable & Power Cable"
+                ],
+                features: [
+                    "⚡ Compact Slim Design",
+                    "🎮 Lightning-fast SSD Performance",
+                    "🔊 3D Audio Tech"
+                ]
+            },
+            {
+                id: "ps5-slim-disc",
+                name: "PlayStation 5 Slim Disc Edition",
+                category: "Console",
+                price: 185000.00,
+                badge: "Best Seller",
+                badgeClass: "badge-best",
+                images: [
+                    "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=600&q=80",
+                    "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "1 Slightly Used Sony DualSense Controller",
+                    "Ultra HD Blu-ray Disc Drive",
+                    "HDMI Cable & Power Cable"
+                ],
+                features: [
+                    "⚡ Sleek New Slim Factor",
+                    "🎮 Disc Drive Included",
+                    "🌐 Ultra-fast SSD"
+                ]
+            },
+            {
+                id: "ps4-controller",
+                name: "PS4 DualShock 4 Controller",
+                category: "Controller",
+                price: 6000.00,
+                badge: "Best Seller",
+                badgeClass: "badge-best",
+                images: [
+                    "https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "Slightly Used Genuine Sony DualShock 4 Wireless Controller"
+                ],
+                features: [
+                    "⚡ Responsive Analog Sticks & Touchpad",
+                    "🎮 Built-in Speaker & Motion Controls",
+                    "🔊 Vibration Feedback"
+                ]
+            },
+            {
+                id: "ps5-controller",
+                name: "PS5 DualSense Wireless Controller",
+                category: "Controller",
+                price: 13000.00,
+                badge: "Best Seller",
+                badgeClass: "badge-best",
+                images: [
+                    "https://images.unsplash.com/photo-1606318801954-d46d46d3360a?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "Slightly Used Official Sony DualSense Wireless Controller"
+                ],
+                features: [
+                    "⚡ Adaptive Triggers & Haptic Feedback",
+                    "🎮 Built-in Microphone & Headset Jack",
+                    "🌐 USB-C Fast Charging"
+                ]
+            },
+            {
+                id: "fc24-game",
+                name: "EA Sports FC 24 Game Disc",
+                category: "Game",
+                price: 4000.00,
+                badge: "Best Seller",
+                badgeClass: "badge-best",
+                images: [
+                    "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "Slightly Used Original EA Sports FC 24 Game Disc"
+                ],
+                features: [
+                    "⚡ Latest Teams & Players",
+                    "🎮 Ultimate Team & Career Mode",
+                    "🌐 Realistic Football Gameplay"
+                ]
+            },
+            {
+                id: "ps-plus-essential-1m",
+                name: "PS Plus Essential (1 Month)",
+                category: "Subscription",
+                price: 3099.00,
+                badge: "",
+                badgeClass: "",
+                images: [
+                    "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "1 Month Digital Subscription Voucher"
+                ],
+                features: [
+                    "✔ Online Multiplayer Access",
+                    "✔ Monthly Free Downloadable Games",
+                    "✔ Exclusive Store Discounts",
+                    "✔ 100GB Cloud Storage"
+                ]
+            },
+            {
+                id: "ps-plus-extra-1m",
+                name: "PS Plus Extra (1 Month)",
+                category: "Subscription",
+                price: 3799.00,
+                badge: "",
+                badgeClass: "",
+                images: [
+                    "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "1 Month Digital Subscription Voucher"
+                ],
+                features: [
+                    "✔ Everything in Essential",
+                    "✔ Access to 400+ PS4 & PS5 Game Catalog"
+                ]
+            },
+            {
+                id: "ps-plus-deluxe-1m",
+                name: "PS Plus Deluxe (1 Month)",
+                category: "Subscription",
+                price: 4299.00,
+                badge: "",
+                badgeClass: "",
+                images: [
+                    "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "1 Month Digital Subscription Voucher"
+                ],
+                features: [
+                    "✔ Everything in Extra",
+                    "✔ Classic PlayStation Games Catalog",
+                    "✔ Time-Limited Game Trials"
+                ]
             }
         ];
 
         let cart = {};
-        let currentCategory = 'All';
+        let favorites = JSON.parse(localStorage.getItem('ps_favorites') || '{}');
+        let currentSelectedProduct = null;
+        let detailQuantity = 1;
+        let currentImageIndex = 0;
+        let isCartExpanded = false;
+        let selectedDeliveryMethod = 'pickup';
 
-        // Render products to grid
-        function renderProducts(items) {
+        // Render Catalog Grid
+        function renderProducts(filterCategory = 'All', searchQuery = '') {
             const grid = document.getElementById('productGrid');
-            grid.innerHTML = '';
+            const fragment = document.createDocumentFragment();
 
-            if (items.length === 0) {
-                grid.innerHTML = '<p style="grid-column: span 2; text-align: center; color: #888;">No items found</p>';
+            const query = searchQuery.toLowerCase().trim();
+
+            const filtered = products.filter(p => {
+                const matchesCategory = filterCategory === 'All' || p.category === filterCategory;
+                const matchesSearch = p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query);
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<p style="grid-column: span 2; text-align: center; color: #888; padding: 20px;">No products found.</p>';
                 return;
             }
 
-            items.forEach(product => {
+            filtered.forEach((product, index) => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
+                
+                const isFav = favorites[product.id];
+                const badgeHtml = product.badge ? `<span class="badge ${product.badgeClass}">${product.badge}</span>` : '';
+                const isFirst = index === 0 && filterCategory === 'All' && !query;
+                const loadingAttr = isFirst ? 'fetchpriority="high"' : 'loading="lazy" decoding="async"';
+
                 card.innerHTML = `
-                    <div class="product-img-container">
-                        <img src="${product.image}" class="product-img" alt="${product.name}" onerror="this.src='https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=500&q=80'">
-                    </div>
-                    <div class="product-info">
-                        <h4 class="product-title">${product.name}</h4>
-                        <p class="product-desc">${product.description}</p>
-                        <div class="product-footer">
-                            <span class="product-price">${product.price.toLocaleString()} ETB</span>
-                            <button class="add-btn" onclick="addToCart('${product.id}')">+</button>
+                    ${badgeHtml}
+                    <button class="fav-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite('${product.id}')">❤️</button>
+                    <div onclick="openProductDetail('${product.id}')">
+                        <img src="${product.images[0]}" alt="${product.name}" width="150" height="120" ${loadingAttr}>
+                        <div class="product-info">
+                            <div class="product-title">${product.name}</div>
+                            <div class="product-footer">
+                                <span class="product-price">${product.price.toLocaleString()} ETB</span>
+                                <button class="quick-add-btn" onclick="event.stopPropagation(); quickAddToCart('${product.id}')">Add +</button>
+                            </div>
                         </div>
                     </div>
                 `;
-                grid.appendChild(card);
+                fragment.appendChild(card);
             });
+
+            grid.innerHTML = '';
+            grid.appendChild(fragment);
         }
 
-        function setCategory(category, btnElement) {
-            currentCategory = category;
-            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-            btnElement.classList.add('active');
-            filterProducts();
-        }
-
-        function filterProducts() {
-            const query = document.getElementById('searchBar').value.toLowerCase();
-            let filtered = products.filter(p => {
-                const matchesCategory = currentCategory === 'All' || p.category === currentCategory;
-                const matchesQuery = p.name.toLowerCase().includes(query) || p.description.toLowerCase().includes(query);
-                return matchesCategory && matchesQuery;
-            });
-            renderProducts(filtered);
-        }
-
-        function addToCart(productId) {
-            if (!cart[productId]) {
-                cart[productId] = { ...products.find(p => p.id === productId), qty: 1 };
-            } else {
-                cart[productId].qty++;
-            }
-            updateCartUI();
-        }
-
-        function updateCartQty(productId, change) {
-            if (cart[productId]) {
-                cart[productId].qty += change;
-                if (cart[productId].qty <= 0) {
-                    delete cart[productId];
+        function filterProducts(category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText.toLowerCase() === category.toLowerCase() || (category === 'All' && btn.innerText === 'All')) {
+                    btn.classList.add('active');
                 }
-            }
-            updateCartUI();
+            });
+            const searchVal = document.getElementById('searchInput').value;
+            renderProducts(category, searchVal);
         }
 
-        function updateCartUI() {
+        function handleSearch(query) {
+            const activeCategoryBtn = document.querySelector('.category-filter .filter-btn.active');
+            const activeCategory = activeCategoryBtn ? activeCategoryBtn.innerText : 'All';
+            renderProducts(activeCategory, query);
+        }
+
+        function toggleFavorite(productId) {
+            if (favorites[productId]) {
+                delete favorites[productId];
+            } else {
+                favorites[productId] = true;
+            }
+            localStorage.setItem('ps_favorites', JSON.stringify(favorites));
+            const activeCategoryBtn = document.querySelector('.category-filter .filter-btn.active');
+            const searchVal = document.getElementById('searchInput').value;
+            renderProducts(activeCategoryBtn ? activeCategoryBtn.innerText : 'All', searchVal);
+        }
+
+        // Product Detail & Slider View
+        function openProductDetail(productId) {
+            currentSelectedProduct = products.find(p => p.id === productId);
+            if (!currentSelectedProduct) return;
+
+            detailQuantity = 1;
+            currentImageIndex = 0;
+
+            document.getElementById('detailTitle').innerText = currentSelectedProduct.name;
+            document.getElementById('detailPrice').innerText = currentSelectedProduct.price.toLocaleString() + " ETB";
+
+            // Setup Slider
+            const track = document.getElementById('sliderTrack');
+            const dots = document.getElementById('sliderDots');
+            track.innerHTML = '';
+            dots.innerHTML = '';
+
+            currentSelectedProduct.images.forEach((imgUrl, i) => {
+                const img = document.createElement('img');
+                img.src = imgUrl;
+                track.appendChild(img);
+
+                const dot = document.createElement('div');
+                dot.className = `dot ${i === 0 ? 'active' : ''}`;
+                dot.onclick = () => setSliderImage(i);
+                dots.appendChild(dot);
+            });
+            track.style.transform = `translateX(0px)`;
+
+            // Included list
+            const includedList = document.getElementById('includedList');
+            includedList.innerHTML = '';
+            currentSelectedProduct.included.forEach(item => {
+                const li = document.createElement('li');
+                li.innerText = `✅ ${item}`;
+                includedList.appendChild(li);
+            });
+
+            // Features list
+            const featuresList = document.getElementById('featuresList');
+            featuresList.innerHTML = '';
+            currentSelectedProduct.features.forEach(feat => {
+                const li = document.createElement('li');
+                li.innerText = feat;
+                featuresList.appendChild(li);
+            });
+
+            updateDetailQuantityUI();
+
+            document.getElementById('catalogView').classList.remove('active');
+            document.getElementById('detailView').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function setSliderImage(index) {
+            currentImageIndex = index;
+            const track = document.getElementById('sliderTrack');
+            track.style.transform = `translateX(-${index * 100}%)`;
+            
+            const dots = document.querySelectorAll('.slider-dots .dot');
+            dots.forEach((d, i) => {
+                d.classList.toggle('active', i === index);
+            });
+        }
+
+        function showCatalogView() {
+            document.getElementById('detailView').classList.remove('active');
+            document.getElementById('catalogView').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function adjustDetailQty(amount) {
+            detailQuantity += amount;
+            if (detailQuantity < 1) detailQuantity = 1;
+            document.getElementById('detailQtyDisplay').innerText = detailQuantity;
+        }
+
+        function updateDetailQuantityUI() {
+            document.getElementById('detailQtyDisplay').innerText = detailQuantity;
+            const container = document.getElementById('detailActionButtons');
+            const existingInCart = cart[currentSelectedProduct.id];
+
+            if (existingInCart) {
+                container.innerHTML = `
+                    <button class="main-action-btn" style="background-color: #4cd964; color: #000;" onclick="updateCartQuantity('${currentSelectedProduct.id}', ${detailQuantity})">Added ✓ (Update Qty)</button>
+                    <button class="remove-cart-btn" onclick="removeFromCart('${currentSelectedProduct.id}')">🗑 Remove from Cart</button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button class="main-action-btn" onclick="addCustomToCart('${currentSelectedProduct.id}', ${detailQuantity})">Add to Cart</button>
+                `;
+            }
+        }
+
+        function quickAddToCart(productId) {
+            if (cart[productId]) {
+                cart[productId].qty += 1;
+            } else {
+                const product = products.find(p => p.id === productId);
+                cart[productId] = { ...product, qty: 1 };
+            }
+            updateCartBar();
+            if (currentSelectedProduct && currentSelectedProduct.id === productId) {
+                updateDetailQuantityUI();
+            }
+        }
+
+        function addCustomToCart(productId, qty) {
+            const product = products.find(p => p.id === productId);
+            cart[productId] = { ...product, qty: qty };
+            updateCartBar();
+            updateDetailQuantityUI();
+        }
+
+        function updateCartQuantity(productId, qty) {
+            if (cart[productId]) {
+                cart[productId].qty = qty;
+                updateCartBar();
+                updateDetailQuantityUI();
+            }
+        }
+
+        function removeFromCart(productId) {
+            delete cart[productId];
+            updateCartBar();
+            if (currentSelectedProduct && currentSelectedProduct.id === productId) {
+                detailQuantity = 1;
+                updateDetailQuantityUI();
+            }
+        }
+
+        // Cart Management & UI
+        function toggleCartExpand() {
+            isCartExpanded = !isCartExpanded;
+            const content = document.getElementById('cartExpandedContent');
+            const toggleText = document.getElementById('cartToggleText');
+            content.classList.toggle('open', isCartExpanded);
+            toggleText.innerText = isCartExpanded ? 'Close ▾' : 'View Details ▴';
+        }
+
+        function updateCartBar() {
+            const cartBar = document.getElementById('cartBar');
+            const cartSummaryTitle = document.getElementById('cartSummaryTitle');
+            const cartItemList = document.getElementById('cartItemList');
+            const cartTotalPrice = document.getElementById('cartTotalPrice');
+
             let totalItems = 0;
             let totalPrice = 0;
-            let listHTML = '';
+            cartItemList.innerHTML = '';
 
             for (let id in cart) {
-                let item = cart[id];
+                const item = cart[id];
                 totalItems += item.qty;
                 totalPrice += item.price * item.qty;
 
-                listHTML += `
-                    <div class="cart-item-row">
-                        <div>
-                            <strong>${item.name}</strong><br>
-                            <small>${item.price.toLocaleString()} ETB x ${item.qty}</small>
-                        </div>
-                        <div class="cart-item-controls">
-                            <button class="qty-btn" onclick="updateCartQty('${id}', -1)">-</button>
-                            <span>${item.qty}</span>
-                            <button class="qty-btn" onclick="updateCartQty('${id}', 1)">+</button>
-                        </div>
-                    </div>
+                const row = document.createElement('div');
+                row.className = 'cart-item-row';
+                row.innerHTML = `
+                    <span>${item.name} x${item.qty}</span>
+                    <span><strong>${(item.price * item.qty).toLocaleString()} ETB</strong></span>
                 `;
+                cartItemList.appendChild(row);
             }
 
-            document.getElementById('cartItemsList').innerHTML = listHTML || '<p style="text-align:center; color:#888;">Your cart is empty</p>';
-            document.getElementById('cartCount').innerText = `${totalItems} item${totalItems === 1 ? '' : 's'}`;
-            document.getElementById('cartTotal').innerText = `${totalPrice.toLocaleString()} ETB`;
-
-            const cartBar = document.getElementById('cartBar');
             if (totalItems > 0) {
-                cartBar.style.display = 'flex';
+                cartBar.style.display = 'block';
+                cartSummaryTitle.innerText = `🛒 Cart (${totalItems})`;
+                cartTotalPrice.innerText = `${totalPrice.toLocaleString()} ETB`;
             } else {
                 cartBar.style.display = 'none';
-                closeCartModal();
+                isCartExpanded = false;
             }
         }
 
-        function openCartModal() {
-            document.getElementById('cartModal').style.display = 'flex';
+        function setDeliveryMethod(method) {
+            selectedDeliveryMethod = method;
+            const cardPickup = document.getElementById('cardStorePickup');
+            const cardDelivery = document.getElementById('cardHomeDelivery');
+            const addressSection = document.getElementById('addressSection');
+
+            if (method === 'pickup') {
+                cardPickup.classList.add('selected');
+                cardDelivery.classList.remove('selected');
+                cardPickup.querySelector('input').checked = true;
+                addressSection.style.display = 'none';
+            } else {
+                cardDelivery.classList.add('selected');
+                cardPickup.classList.remove('selected');
+                cardDelivery.querySelector('input').checked = true;
+                addressSection.style.display = 'block';
+            }
+            populateCheckoutSummary();
         }
 
-        function closeCartModal() {
-            document.getElementById('cartModal').style.display = 'none';
-        }
+        function populateCheckoutSummary() {
+            const summaryContainer = document.getElementById('checkoutOrderSummaryList');
+            summaryContainer.innerHTML = '';
 
-        function checkoutWithChapa() {
-            let cartData = [];
-            let totalPrice = 0;
-
+            let subtotal = 0;
             for (let id in cart) {
-                cartData.push({ id: cart[id].id, name: cart[id].name, price: cart[id].price, quantity: cart[id].qty });
-                totalPrice += cart[id].price * cart[id].qty;
+                const item = cart[id];
+                subtotal += item.price * item.qty;
+                const row = document.createElement('div');
+                row.className = 'summary-row';
+                row.innerHTML = `<span>${item.name} ×${item.qty}</span> <span>${(item.price * item.qty).toLocaleString()} ETB</span>`;
+                summaryContainer.appendChild(row);
             }
 
-            if (cartData.length === 0) return;
+            const deliveryText = (selectedDeliveryMethod === 'pickup') ? 'FREE (Store Pickup)' : 'FREE (Megenagna only)';
+            const deliveryRow = document.createElement('div');
+            deliveryRow.className = 'summary-row';
+            deliveryRow.innerHTML = `<span>Delivery</span> <span>${deliveryText}</span>`;
+            summaryContainer.appendChild(deliveryRow);
 
-            // Payload sent back to your backend/bot for Chapa payment initialization
-            const payload = {
-                user: tg.initDataUnsafe?.user?.username ? `@${tg.initDataUnsafe.user.username}` : (tg.initDataUnsafe?.user?.id || 'iamanteneh'),
-                items: cartData,
-                total: totalPrice
+            const divider = document.createElement('hr');
+            divider.className = 'cart-divider';
+            summaryContainer.appendChild(divider);
+
+            const totalRow = document.createElement('div');
+            totalRow.className = 'summary-total-row';
+            totalRow.innerHTML = `<span>Total</span> <span>${subtotal.toLocaleString()} ETB</span>`;
+            summaryContainer.appendChild(totalRow);
+        }
+
+        function openCheckoutModal() {
+            document.getElementById('checkoutFormView').style.display = 'block';
+            document.getElementById('successView').style.display = 'none';
+            populateCheckoutSummary();
+            document.getElementById('checkoutModal').style.display = 'flex';
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').style.display = 'none';
+        }
+
+        function copyText(text, btnElement) {
+            navigator.clipboard.writeText(text).then(() => {
+                let originalText = btnElement.innerText;
+                btnElement.innerText = "Copied!";
+                btnElement.style.backgroundColor = "#4cd964";
+                setTimeout(() => {
+                    btnElement.innerText = originalText;
+                    btnElement.style.backgroundColor = "#0070d1";
+                }, 2000);
+            });
+        }
+
+        function confirmOrder() {
+            if (selectedDeliveryMethod === 'delivery') {
+                const subCity = document.getElementById('subCity').value.trim();
+                const landmark = document.getElementById('landmark').value.trim();
+                if (!subCity || !landmark) {
+                    alert("Please fill in your Sub City and Area / Landmark for delivery.");
+                    return;
+                }
+            }
+
+            const check1 = document.getElementById('checkInfoCorrect').checked;
+            const check2 = document.getElementById('checkPaymentUnderstand').checked;
+
+            if (!check1 || !check2) {
+                alert("Please check both confirmation boxes before confirming your order.");
+                return;
+            }
+
+            // Generate random order ID
+            const randomId = '#SPS-' + Math.floor(10000 + Math.random() * 90000);
+            document.getElementById('successOrderId').innerText = randomId;
+            document.getElementById('successDeliveryText').innerText = (selectedDeliveryMethod === 'pickup') ? 'Store Pickup (FREE)' : '🚚 FREE (Megenagna only)';
+
+            // Switch to success view inside modal
+            document.getElementById('checkoutFormView').style.display = 'none';
+            document.getElementById('successView').style.display = 'block';
+
+            // Prepare Telegram data payload
+            let totalPrice = 0;
+            let itemsSummary = [];
+            for(let id in cart) {
+                totalPrice += cart[id].price * cart[id].qty;
+                itemsSummary.push(`${cart[id].name} (x${cart[id].qty})`);
+            }
+
+            const orderData = {
+                order_id: randomId,
+                delivery_method: selectedDeliveryMethod === 'pickup' ? 'Store Pickup' : 'Home Delivery',
+                sub_city: selectedDeliveryMethod === 'delivery' ? document.getElementById('subCity').value.trim() : 'N/A',
+                landmark: selectedDeliveryMethod === 'delivery' ? document.getElementById('landmark').value.trim() : 'N/A',
+                items: itemsSummary,
+                total: totalPrice,
+                currency: "ETB",
+                send_receipt_to: "@iamanteneh",
+                user: tg.initDataUnsafe?.user?.username || tg.initDataUnsafe?.user?.id || "guest"
             };
 
-            // Send data back to Telegram bot container if opened as WebApp
-            tg.sendData(JSON.stringify(payload));
-            tg.close();
+            // Send data back to Telegram bot if available
+            try {
+                tg.sendData(JSON.stringify(orderData));
+            } catch(e) {
+                console.log("Telegram sendData not active in browser preview");
+            }
         }
 
-        // Initial render
-        renderProducts(products);
+        function finishAndClose() {
+            cart = {};
+            updateCartBar();
+            closeCheckoutModal();
+            showCatalogView();
+            try {
+                tg.close();
+            } catch(e) {}
+        }
+
+        // Initial catalog render
+        renderProducts('All', '');
     </script>
 </body>
 </html>
