@@ -312,7 +312,7 @@
             margin-bottom: 3px;
         }
 
-        /* Enhanced Quantity & Cart actions inside Detail View */
+        /* Quantity & Cart actions inside Detail View */
         .qty-action-box {
             background-color: #262626;
             padding: 10px 12px;
@@ -383,7 +383,7 @@
             width: 100%;
         }
 
-        /* Detailed Cart Floating Bar / Expanded View */
+        /* Detailed Cart Floating Bar */
         .cart-bar {
             position: fixed;
             bottom: 0;
@@ -467,7 +467,7 @@
             text-align: center;
         }
 
-        /* Modal styling */
+        /* Modal / Checkout Flow Styling */
         .modal {
             display: none;
             position: fixed;
@@ -475,7 +475,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.8);
+            background-color: rgba(0,0,0,0.85);
             z-index: 200;
             justify-content: center;
             align-items: center;
@@ -489,9 +489,10 @@
             border-radius: 12px;
             padding: 20px;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             border: 1px solid #333;
             margin: auto;
+            box-sizing: border-box;
         }
 
         .modal-content h2 {
@@ -501,8 +502,58 @@
             text-align: center;
         }
 
+        .checkout-section-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #0070d1;
+            text-transform: uppercase;
+            margin: 15px 0 8px 0;
+            border-bottom: 1px solid #333;
+            padding-bottom: 4px;
+        }
+
+        .delivery-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .delivery-card {
+            background-color: #262626;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .delivery-card.selected {
+            border-color: #0070d1;
+            background-color: #1a2634;
+        }
+
+        .delivery-card input {
+            margin-top: 2px;
+        }
+
+        .delivery-card-info h4 {
+            margin: 0 0 2px 0;
+            font-size: 13px;
+            color: #fff;
+        }
+
+        .delivery-card-info p {
+            margin: 0;
+            font-size: 11px;
+            color: #aaa;
+            line-height: 1.3;
+        }
+
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .form-group label {
@@ -512,7 +563,7 @@
             margin-bottom: 4px;
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
             padding: 8px 10px;
             background-color: #2a2a2a;
@@ -521,6 +572,40 @@
             border-radius: 6px;
             font-size: 13px;
             box-sizing: border-box;
+        }
+
+        .arrival-notice {
+            background-color: #242424;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #ccc;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .order-summary-box {
+            background-color: #242424;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            color: #ccc;
+        }
+
+        .summary-total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            margin-top: 6px;
         }
 
         .payment-option {
@@ -555,6 +640,21 @@
             cursor: pointer;
         }
 
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 12px;
+            color: #ccc;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-group input {
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
         .disclaimer-box {
             background-color: rgba(231, 76, 60, 0.1);
             border: 1px solid rgba(231, 76, 60, 0.3);
@@ -576,6 +676,33 @@
             font-weight: bold;
             cursor: pointer;
             margin-top: 8px;
+        }
+
+        /* Success View inside Modal */
+        #successView {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        #successView h2 {
+            color: #4cd964;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .success-card {
+            background-color: #242424;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 15px 0;
+            text-align: left;
+            font-size: 12px;
+            color: #ccc;
+            line-height: 1.5;
+        }
+
+        .success-card strong {
+            color: #fff;
         }
     </style>
 </head>
@@ -639,16 +766,16 @@
             <div class="info-block" id="conditionBlock">
                 <h3>Condition & Warranty</h3>
                 <ul id="conditionList">
-                    <li>✔ Brand New & Tested</li>
-                    <li>✔ Ready to Use</li>
-                    <li>🛡 Official Store Warranty Available</li>
+                    <li>✔ Slightly Used & Tested</li>
+                    <li>✔ Pristine Condition</li>
+                    <li>🛡 Store Warranty Available</li>
                 </ul>
             </div>
 
             <div class="info-block">
                 <h3>🚚 Delivery Information</h3>
                 <ul style="margin:0; padding-left:16px; font-size:12px; color:#ccc;">
-                    <li>Fast delivery around Addis Ababa</li>
+                    <li>Free delivery to Megenagna only. Other areas may incur a delivery fee.</li>
                     <li>Store pickup available at Yeka Abado, Gedera Bacha Mall, 1st Floor</li>
                 </ul>
             </div>
@@ -684,50 +811,121 @@
                 <span>Total</span>
                 <span id="cartTotalPrice">0 ETB</span>
             </div>
-            <button class="checkout-btn" onclick="openPaymentModal()">Checkout</button>
+            <button class="checkout-btn" onclick="openCheckoutModal()">Checkout</button>
         </div>
     </div>
 
-    <!-- Payment & Delivery Instructions Modal -->
-    <div class="modal" id="paymentModal">
-        <div class="modal-content">
-            <h2>Checkout & Payment</h2>
-            
-            <div class="form-group" style="margin-top: 10px;">
-                <label for="userLocation">Delivery Location / Address:</label>
-                <input type="text" id="userLocation" placeholder="e.g., Bole, Addis Ababa">
+    <!-- Checkout & Payment Modal -->
+    <div class="modal" id="checkoutModal">
+        <div class="modal-content" id="modalContainer">
+            <!-- Checkout Form Content -->
+            <div id="checkoutFormView">
+                <h2>Checkout & Delivery</h2>
+
+                <div class="checkout-section-title">Delivery Method</div>
+                <div class="delivery-options">
+                    <label class="delivery-card selected" id="cardStorePickup" onclick="setDeliveryMethod('pickup')">
+                        <input type="radio" name="deliveryMethod" value="pickup" checked>
+                        <div class="delivery-card-info">
+                            <h4>Store Pickup — FREE</h4>
+                            <p>Pickup at Yeka Abado, Gedera Bacha Mall, First Floor</p>
+                        </div>
+                    </label>
+
+                    <label class="delivery-card" id="cardHomeDelivery" onclick="setDeliveryMethod('delivery')">
+                        <input type="radio" name="deliveryMethod" value="delivery">
+                        <div class="delivery-card-info">
+                            <h4>Home Delivery</h4>
+                            <p>FREE delivery to Megenagna only. Other areas may incur a delivery fee depending on location.</p>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Address Fields (Shown only on Home Delivery) -->
+                <div id="addressSection" style="display: none;">
+                    <div class="checkout-section-title">Delivery Address</div>
+                    <div class="form-group">
+                        <label for="subCity">Sub City</label>
+                        <input type="text" id="subCity" placeholder="e.g., Bole, Yeka, Kirkos">
+                    </div>
+                    <div class="form-group">
+                        <label for="landmark">Area / Landmark</label>
+                        <input type="text" id="landmark" placeholder="e.g., Megenagna, Lem Hotel">
+                    </div>
+                    <div class="form-group">
+                        <label for="houseNum">House / Building (Optional)</label>
+                        <input type="text" id="houseNum" placeholder="e.g., Building Name, Apt #">
+                    </div>
+                </div>
+
+                <div class="checkout-section-title">Estimated Arrival</div>
+                <div class="arrival-notice">
+                    🕒 <strong>Estimated Delivery Time:</strong> 1–2 Business Days<br>
+                    Orders are processed after payment verification. You will receive updates through Telegram once your order is confirmed.
+                </div>
+
+                <div class="checkout-section-title">Order Summary</div>
+                <div class="order-summary-box" id="checkoutOrderSummaryList">
+                    <!-- Dynamic summary rows -->
+                </div>
+
+                <div class="checkout-section-title">Payment Information</div>
+                <p style="font-size: 12px; color: #aaa; margin: 0 0 8px 0;">Transfer total amount to one of the accounts below:</p>
+                
+                <div class="payment-option">
+                    <h3>Telebirr</h3>
+                    <div class="payment-detail-row">
+                        <span><strong>Phone:</strong> 0924474307</span>
+                        <button class="copy-btn" onclick="copyText('0924474307', this)">Copy</button>
+                    </div>
+                    <div class="payment-detail-row">
+                        <span><strong>Name:</strong> Anteneh</span>
+                    </div>
+                </div>
+
+                <div class="payment-option">
+                    <h3>Commercial Bank of Ethiopia (CBE)</h3>
+                    <div class="payment-detail-row">
+                        <span><strong>Account:</strong> 1000355132351</span>
+                        <button class="copy-btn" onclick="copyText('1000355132351', this)">Copy</button>
+                    </div>
+                    <div class="payment-detail-row">
+                        <span><strong>Name:</strong> Anteneh Tesfaye</span>
+                    </div>
+                </div>
+
+                <div class="disclaimer-box">
+                    Please send your payment receipt screenshot directly to <strong>@iamanteneh</strong> on Telegram after confirming.
+                </div>
+
+                <div class="checkout-section-title">Confirmation</div>
+                <label class="checkbox-group">
+                    <input type="checkbox" id="checkInfoCorrect">
+                    <span>I confirm that my delivery information is correct.</span>
+                </label>
+                <label class="checkbox-group">
+                    <input type="checkbox" id="checkPaymentUnderstand">
+                    <span>I understand that orders are processed after payment verification.</span>
+                </label>
+
+                <button class="checkout-btn" style="margin-top: 12px;" onclick="confirmOrder()">🛒 Confirm Order</button>
+                <button class="close-modal-btn" onclick="closeCheckoutModal()">Cancel</button>
             </div>
 
-            <p style="font-size: 12px; color: #aaa; margin: 10px 0 6px 0;">Transfer total amount to one of the accounts below:</p>
-            
-            <div class="payment-option">
-                <h3>Telebirr</h3>
-                <div class="payment-detail-row">
-                    <span><strong>Phone:</strong> 0924474307</span>
-                    <button class="copy-btn" onclick="copyText('0924474307', this)">Copy</button>
+            <!-- Success View Content -->
+            <div id="successView" style="display: none;">
+                <h2>🎉 Thank You!</h2>
+                <p style="font-size: 13px; color: #aaa; margin: 0 0 10px 0;">Your order has been received.</p>
+                
+                <div class="success-card">
+                    <div><strong>Order ID:</strong> <span id="successOrderId">#SPS-48291</span></div>
+                    <div style="margin-top: 4px;"><strong>Delivery:</strong> <span id="successDeliveryText">Store Pickup (FREE)</span></div>
+                    <div style="margin-top: 4px;"><strong>Estimated Arrival:</strong> 1–2 Business Days</div>
+                    <div style="margin-top: 8px; color: #4cd964;">We'll notify you on Telegram as soon as your payment is verified.</div>
                 </div>
-                <div class="payment-detail-row">
-                    <span><strong>Name:</strong> Anteneh</span>
-                </div>
-            </div>
 
-            <div class="payment-option">
-                <h3>Commercial Bank of Ethiopia (CBE)</h3>
-                <div class="payment-detail-row">
-                    <span><strong>Account:</strong> 1000355132351</span>
-                    <button class="copy-btn" onclick="copyText('1000355132351', this)">Copy</button>
-                </div>
-                <div class="payment-detail-row">
-                    <span><strong>Name:</strong> Anteneh Tesfaye</span>
-                </div>
+                <button class="checkout-btn" onclick="finishAndClose()">Continue Shopping</button>
             </div>
-
-            <div class="disclaimer-box">
-                <strong>Disclaimer:</strong> Please send your payment receipt screenshot directly to <strong>@iamanteneh</strong> on Telegram. Orders will only be processed and dispatched after payment verification.
-            </div>
-
-            <button class="checkout-btn" style="width: 100%;" onclick="confirmOrder()">Confirm & Send Order</button>
-            <button class="close-modal-btn" onclick="closePaymentModal()">Cancel</button>
         </div>
     </div>
 
@@ -748,7 +946,7 @@
                     "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=600&q=80"
                 ],
                 included: [
-                    "2 Original Sony DualShock 4 Wireless Controllers",
+                    "2 Slightly Used Sony DualShock 4 Wireless Controllers",
                     "HDMI Cable",
                     "Power Cable",
                     "All Necessary Accessories"
@@ -772,7 +970,7 @@
                     "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80"
                 ],
                 included: [
-                    "2 Original Sony DualShock 4 Controllers",
+                    "2 Slightly Used Sony DualShock 4 Controllers",
                     "HDMI Cable & Power Cable",
                     "Pre-installed Game Library"
                 ],
@@ -794,7 +992,7 @@
                     "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=600&q=80"
                 ],
                 included: [
-                    "2 Original Sony DualShock 4 Controllers",
+                    "2 Slightly Used Sony DualShock 4 Controllers",
                     "HDMI Cable & Power Cable"
                 ],
                 features: [
@@ -815,7 +1013,7 @@
                     "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=600&q=80"
                 ],
                 included: [
-                    "1 Original Sony DualSense Wireless Controller",
+                    "1 Slightly Used Sony DualSense Wireless Controller",
                     "HDMI 2.1 Cable",
                     "Power Cable & Base Stand"
                 ],
@@ -837,7 +1035,7 @@
                     "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=600&q=80"
                 ],
                 included: [
-                    "1 Original Sony DualSense Controller",
+                    "1 Slightly Used Sony DualSense Controller",
                     "Ultra HD Blu-ray Disc Drive",
                     "HDMI & Power Cables"
                 ],
@@ -859,7 +1057,7 @@
                     "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=600&q=80"
                 ],
                 included: [
-                    "1 Original Sony DualSense Controller",
+                    "1 Slightly Used Sony DualSense Controller",
                     "HDMI Cable & Power Cable"
                 ],
                 features: [
@@ -880,7 +1078,7 @@
                     "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=600&q=80"
                 ],
                 included: [
-                    "1 Original Sony DualSense Controller",
+                    "1 Slightly Used Sony DualSense Controller",
                     "Ultra HD Blu-ray Disc Drive",
                     "HDMI Cable & Power Cable"
                 ],
@@ -901,7 +1099,7 @@
                     "https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?auto=format&fit=crop&w=600&q=80"
                 ],
                 included: [
-                    "Genuine Sony DualShock 4 Wireless Controller"
+                    "Slightly Used Genuine Sony DualShock 4 Wireless Controller"
                 ],
                 features: [
                     "⚡ Responsive Analog Sticks & Touchpad",
@@ -920,7 +1118,7 @@
                     "https://images.unsplash.com/photo-1606318801954-d46d46d3360a?auto=format&fit=crop&w=600&q=80"
                 ],
                 included: [
-                    "Official Sony DualSense Wireless Controller"
+                    "Slightly Used Official Sony DualSense Wireless Controller"
                 ],
                 features: [
                     "⚡ Adaptive Triggers & Haptic Feedback",
@@ -939,7 +1137,7 @@
                     "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&w=600&q=80"
                 ],
                 included: [
-                    "Original EA Sports FC 24 Game Disc"
+                    "Slightly Used Original EA Sports FC 24 Game Disc"
                 ],
                 features: [
                     "⚡ Latest Teams & Players",
@@ -1012,6 +1210,7 @@
         let detailQuantity = 1;
         let currentImageIndex = 0;
         let isCartExpanded = false;
+        let selectedDeliveryMethod = 'pickup';
 
         // Render Catalog Grid
         function renderProducts(filterCategory = 'All', searchQuery = '') {
@@ -1264,12 +1463,65 @@
             }
         }
 
-        function openPaymentModal() {
-            document.getElementById('paymentModal').style.display = 'flex';
+        function setDeliveryMethod(method) {
+            selectedDeliveryMethod = method;
+            const cardPickup = document.getElementById('cardStorePickup');
+            const cardDelivery = document.getElementById('cardHomeDelivery');
+            const addressSection = document.getElementById('addressSection');
+
+            if (method === 'pickup') {
+                cardPickup.classList.add('selected');
+                cardDelivery.classList.remove('selected');
+                cardPickup.querySelector('input').checked = true;
+                addressSection.style.display = 'none';
+            } else {
+                cardDelivery.classList.add('selected');
+                cardPickup.classList.remove('selected');
+                cardDelivery.querySelector('input').checked = true;
+                addressSection.style.display = 'block';
+            }
+            populateCheckoutSummary();
         }
 
-        function closePaymentModal() {
-            document.getElementById('paymentModal').style.display = 'none';
+        function populateCheckoutSummary() {
+            const summaryContainer = document.getElementById('checkoutOrderSummaryList');
+            summaryContainer.innerHTML = '';
+
+            let subtotal = 0;
+            for (let id in cart) {
+                const item = cart[id];
+                subtotal += item.price * item.qty;
+                const row = document.createElement('div');
+                row.className = 'summary-row';
+                row.innerHTML = `<span>${item.name} ×${item.qty}</span> <span>${(item.price * item.qty).toLocaleString()} ETB</span>`;
+                summaryContainer.appendChild(row);
+            }
+
+            const deliveryText = (selectedDeliveryMethod === 'pickup') ? 'FREE (Store Pickup)' : 'FREE (Megenagna only)';
+            const deliveryRow = document.createElement('div');
+            deliveryRow.className = 'summary-row';
+            deliveryRow.innerHTML = `<span>Delivery</span> <span>${deliveryText}</span>`;
+            summaryContainer.appendChild(deliveryRow);
+
+            const divider = document.createElement('hr');
+            divider.className = 'cart-divider';
+            summaryContainer.appendChild(divider);
+
+            const totalRow = document.createElement('div');
+            totalRow.className = 'summary-total-row';
+            totalRow.innerHTML = `<span>Total</span> <span>${subtotal.toLocaleString()} ETB</span>`;
+            summaryContainer.appendChild(totalRow);
+        }
+
+        function openCheckoutModal() {
+            document.getElementById('checkoutFormView').style.display = 'block';
+            document.getElementById('successView').style.display = 'none';
+            populateCheckoutSummary();
+            document.getElementById('checkoutModal').style.display = 'flex';
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').style.display = 'none';
         }
 
         function copyText(text, btnElement) {
@@ -1285,33 +1537,68 @@
         }
 
         function confirmOrder() {
-            const locationInput = document.getElementById('userLocation').value.trim();
-            if (!locationInput) {
-                alert("Please enter your delivery location or address.");
+            if (selectedDeliveryMethod === 'delivery') {
+                const subCity = document.getElementById('subCity').value.trim();
+                const landmark = document.getElementById('landmark').value.trim();
+                if (!subCity || !landmark) {
+                    alert("Please fill in your Sub City and Area / Landmark for delivery.");
+                    return;
+                }
+            }
+
+            const check1 = document.getElementById('checkInfoCorrect').checked;
+            const check2 = document.getElementById('checkPaymentUnderstand').checked;
+
+            if (!check1 || !check2) {
+                alert("Please check both confirmation boxes before confirming your order.");
                 return;
             }
 
+            // Generate random order ID
+            const randomId = '#SPS-' + Math.floor(10000 + Math.random() * 90000);
+            document.getElementById('successOrderId').innerText = randomId;
+            document.getElementById('successDeliveryText').innerText = (selectedDeliveryMethod === 'pickup') ? 'Store Pickup (FREE)' : '🚚 FREE (Megenagna only)';
+
+            // Switch to success view inside modal
+            document.getElementById('checkoutFormView').style.display = 'none';
+            document.getElementById('successView').style.display = 'block';
+
+            // Prepare Telegram data payload
             let totalPrice = 0;
             let itemsSummary = [];
-            
             for(let id in cart) {
                 totalPrice += cart[id].price * cart[id].qty;
                 itemsSummary.push(`${cart[id].name} (x${cart[id].qty})`);
             }
 
             const orderData = {
-                store_location: "Yeka Abado, Gedera Bacha Mall, First Floor",
+                order_id: randomId,
+                delivery_method: selectedDeliveryMethod === 'pickup' ? 'Store Pickup' : 'Home Delivery',
+                sub_city: selectedDeliveryMethod === 'delivery' ? document.getElementById('subCity').value.trim() : 'N/A',
+                landmark: selectedDeliveryMethod === 'delivery' ? document.getElementById('landmark').value.trim() : 'N/A',
                 items: itemsSummary,
                 total: totalPrice,
                 currency: "ETB",
-                delivery_location: locationInput,
                 send_receipt_to: "@iamanteneh",
-                payment_methods: ["Telebirr: 0924474307 (Anteneh)", "CBE: 1000355132351 (Anteneh Tesfaye)"],
                 user: tg.initDataUnsafe?.user?.username || tg.initDataUnsafe?.user?.id || "guest"
             };
 
-            tg.sendData(JSON.stringify(orderData));
-            tg.close();
+            // Send data back to Telegram bot if available
+            try {
+                tg.sendData(JSON.stringify(orderData));
+            } catch(e) {
+                console.log("Telegram sendData not active in browser preview");
+            }
+        }
+
+        function finishAndClose() {
+            cart = {};
+            updateCartBar();
+            closeCheckoutModal();
+            showCatalogView();
+            try {
+                tg.close();
+            } catch(e) {}
         }
 
         // Initial catalog render
