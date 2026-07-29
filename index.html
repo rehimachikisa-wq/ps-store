@@ -474,18 +474,83 @@
             display: block;
         }
 
+        /* Cart item row with smooth animations */
         .cart-item-row {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
             font-size: 13px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #252525;
             color: #ccc;
+            transition: all 0.3s ease;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .cart-item-row.removing {
+            opacity: 0;
+            transform: scale(0.9);
+            height: 0;
+            margin-bottom: 0;
+            padding-bottom: 0;
+            overflow: hidden;
         }
 
         .cart-item-details div {
             font-size: 11px;
             color: #aaa;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .cart-qty-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #222;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 2px 6px;
+        }
+
+        .cart-qty-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .cart-item-remove {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            font-size: 11px;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0;
+        }
+
+        .clear-cart-btn {
+            background: none;
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            text-align: center;
         }
 
         .cart-divider {
@@ -770,6 +835,91 @@
             margin-top: 8px;
         }
 
+        /* Confirmation Dialog Styles */
+        .confirm-dialog-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 300;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .confirm-dialog-box {
+            background-color: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 20px;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .confirm-dialog-box p {
+            font-size: 14px;
+            color: #fff;
+            margin-top: 0;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .confirm-btn-primary {
+            flex: 1;
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .confirm-btn-secondary {
+            flex: 1;
+            background-color: #2a2a2a;
+            color: #ccc;
+            border: 1px solid #444;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* Toast notification for empty state */
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background-color: #2a2a2a;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            z-index: 400;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
         /* Success View inside Modal */
         #successView {
             text-align: center;
@@ -899,6 +1049,7 @@
         
         <div class="cart-expanded-content" id="cartExpandedContent">
             <div id="cartItemList"></div>
+            <button class="clear-cart-btn" onclick="promptClearCart()">Clear Cart</button>
             <hr class="cart-divider">
             <div class="cart-total-row">
                 <span>Total</span>
@@ -907,6 +1058,20 @@
             <button class="checkout-btn" onclick="openCheckoutModal()">Checkout</button>
         </div>
     </div>
+
+    <!-- Confirmation Dialog Modal -->
+    <div class="confirm-dialog-overlay" id="confirmDialogOverlay">
+        <div class="confirm-dialog-box">
+            <p id="confirmDialogText">Remove this item from your cart?</p>
+            <div class="confirm-actions">
+                <button class="confirm-btn-primary" id="confirmDialogYesBtn">Remove</button>
+                <button class="confirm-btn-secondary" onclick="closeConfirmDialog()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-notification" id="toastNotification">Your cart is empty.</div>
 
     <!-- Checkout & Payment Modal -->
     <div class="modal" id="checkoutModal">
@@ -1589,24 +1754,25 @@
         }
 
         function getCartKey(productId, duration) {
-            return currentSelectedProduct.category === 'Subscription' ? `${productId}-${duration}` : productId;
+            return currentSelectedProduct && currentSelectedProduct.category === 'Subscription' ? `${productId}-${duration}` : productId;
         }
 
         function updateDetailQuantityUI() {
+            if (!currentSelectedProduct) return;
             document.getElementById('detailQtyDisplay').innerText = detailQuantity;
             const container = document.getElementById('detailActionButtons');
             
             let cartKey = currentSelectedProduct.id;
             if (currentSelectedProduct.category === 'Subscription') {
-                cartKey = getCartKey(currentSelectedProduct.id, selectedDuration);
+                cartKey = `${currentSelectedProduct.id}-${selectedDuration}`;
             }
 
             const existingInCart = cart[cartKey];
 
             if (existingInCart) {
                 container.innerHTML = `
-                    <button class="main-action-btn" style="background-color: #4cd964; color: #000;" onclick="updateCartQuantity('${cartKey}', ${detailQuantity})">Added ✓ (Update Qty)</button>
-                    <button class="remove-cart-btn" onclick="removeFromCart('${cartKey}')">🗑 Remove from Cart</button>
+                    <button class="main-action-btn" style="background-color: #4cd964; color: #000;" onclick="updateCartQuantityFromDetail('${cartKey}', ${detailQuantity})">Added ✓ (Update Qty)</button>
+                    <button class="remove-cart-btn" onclick="promptRemoveItem('${cartKey}')">🗑 Remove from Cart</button>
                 `;
             } else {
                 container.innerHTML = `
@@ -1624,7 +1790,7 @@
                 const durObj = currentSelectedProduct.durations[selectedDuration];
                 price = durObj.price;
                 durationLabel = durObj.label;
-                cartKey = getCartKey(currentSelectedProduct.id, selectedDuration);
+                cartKey = `${currentSelectedProduct.id}-${selectedDuration}`;
             }
 
             cart[cartKey] = {
@@ -1642,7 +1808,7 @@
             updateDetailQuantityUI();
         }
 
-        function updateCartQuantity(cartKey, qty) {
+        function updateCartQuantityFromDetail(cartKey, qty) {
             if (cart[cartKey]) {
                 cart[cartKey].qty = qty;
                 updateCartBar();
@@ -1650,16 +1816,113 @@
             }
         }
 
-        function removeFromCart(cartKey) {
-            delete cart[cartKey];
-            updateCartBar();
-            if (currentSelectedProduct) {
-                detailQuantity = 1;
-                updateDetailQuantityUI();
+        // Cart Management & UI Improvements (Requirements 1-7)
+        function changeCartItemQty(cartKey, delta) {
+            if (!cart[cartKey]) return;
+            let newQty = cart[cartKey].qty + delta;
+            
+            if (newQty <= 0) {
+                // Requirement 2: If quantity becomes 0, ask whether to remove the item.
+                promptRemoveItem(cartKey, "Remove this item from your cart?");
+            } else {
+                cart[cartKey].qty = newQty;
+                updateCartBar();
+                if (currentSelectedProduct) {
+                    updateDetailQuantityUI();
+                }
             }
         }
 
-        // Cart Management & UI
+        let pendingRemovalKey = null;
+
+        function promptRemoveItem(cartKey, customText = "Remove this item from your cart?") {
+            pendingRemovalKey = cartKey;
+            document.getElementById('confirmDialogText').innerText = customText;
+            const yesBtn = document.getElementById('confirmDialogYesBtn');
+            yesBtn.innerText = "Remove";
+            yesBtn.onclick = executeRemoveItem;
+            document.getElementById('confirmDialogOverlay').style.display = 'flex';
+        }
+
+        function promptClearCart() {
+            document.getElementById('confirmDialogText').innerText = "Are you sure you want to remove all items from your cart?";
+            const yesBtn = document.getElementById('confirmDialogYesBtn');
+            yesBtn.innerText = "Clear Cart";
+            yesBtn.onclick = executeClearCart;
+            document.getElementById('confirmDialogOverlay').style.display = 'flex';
+        }
+
+        function closeConfirmDialog() {
+            document.getElementById('confirmDialogOverlay').style.display = 'none';
+            pendingRemovalKey = null;
+        }
+
+        function executeRemoveItem() {
+            if (!pendingRemovalKey) return;
+            const cartKey = pendingRemovalKey;
+            closeConfirmDialog();
+
+            // Requirement 7: Use smooth animations when removing items so the UI feels polished.
+            const rowEl = document.getElementById(`cart-row-${cartKey}`);
+            if (rowEl) {
+                rowEl.classList.add('removing');
+                setTimeout(() => {
+                    removeItemFinal(cartKey);
+                }, 300); // match transition duration
+            } else {
+                removeItemFinal(cartKey);
+            }
+        }
+
+        function removeItemFinal(cartKey) {
+            delete cart[cartKey];
+            updateCartBar();
+            if (currentSelectedProduct) {
+                updateDetailQuantityUI();
+            }
+            checkEmptyCartAndReturnIfNeeded();
+        }
+
+        function executeClearCart() {
+            closeConfirmDialog();
+            
+            // Animate all rows out or clear instantly
+            const items = document.querySelectorAll('.cart-item-row');
+            items.forEach(el => el.classList.add('removing'));
+
+            setTimeout(() => {
+                cart = {};
+                updateCartBar();
+                if (currentSelectedProduct) {
+                    updateDetailQuantityUI();
+                }
+                checkEmptyCartAndReturnIfNeeded();
+            }, 300);
+        }
+
+        function checkEmptyCartAndReturnIfNeeded() {
+            const totalItemsCount = Object.keys(cart).reduce((sum, k) => sum + cart[k].qty, 0);
+            if (totalItemsCount === 0) {
+                // Requirement 4: After removing the last item, automatically close the checkout/cart page, return user to product page, and display "Your cart is empty."
+                closeCheckoutModal();
+                if (isCartExpanded) {
+                    toggleCartExpand();
+                }
+                // Return to product catalog view (or ensure we are not stuck in checkout)
+                showCatalogView();
+                showToast("Your cart is empty.");
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toastNotification');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
         function toggleCartExpand() {
             isCartExpanded = !isCartExpanded;
             const content = document.getElementById('cartExpandedContent');
@@ -1685,18 +1948,30 @@
 
                 const row = document.createElement('div');
                 row.className = 'cart-item-row';
+                row.id = `cart-row-${key}`;
                 
                 let detailText = '';
                 if (item.category === 'Subscription') {
                     detailText = `<div class="cart-item-details">${item.durationLabel}</div>`;
                 }
 
+                // Requirement 1 & 2: Quantity selector and Remove button
                 row.innerHTML = `
-                    <div>
-                        <div><strong>${item.name}</strong> x${item.qty}</div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.name}</div>
                         ${detailText}
+                        <div class="cart-item-controls">
+                            <div class="cart-qty-box">
+                                <button class="cart-qty-btn" onclick="changeCartItemQty('${key}', -1)">-</button>
+                                <span style="font-size: 12px; font-weight: 600; min-width: 12px; text-align: center;">${item.qty}</span>
+                                <button class="cart-qty-btn" onclick="changeCartItemQty('${key}', 1)">+</button>
+                            </div>
+                            <button class="cart-item-remove" onclick="promptRemoveItem('${key}')">Remove</button>
+                        </div>
                     </div>
-                    <span><strong>${(item.price * item.qty).toLocaleString()} ETB</strong></span>
+                    <div style="text-align: right; margin-left: 10px;">
+                        <strong>${(item.price * item.qty).toLocaleString()} ETB</strong>
+                    </div>
                 `;
                 cartItemList.appendChild(row);
             }
@@ -1798,6 +2073,9 @@
         }
 
         function openCheckoutModal() {
+            const totalItemsCount = Object.keys(cart).reduce((sum, k) => sum + cart[k].qty, 0);
+            if (totalItemsCount === 0) return;
+
             const { hasSubscription, hasPhysical } = getCartComposition();
 
             const deliveryMethodSectionWrapper = document.getElementById('deliveryMethodSectionWrapper');
