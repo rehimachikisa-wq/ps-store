@@ -199,63 +199,102 @@
     </div>
 
     <div class="cart-bar" id="cartBar" style="display: none;">
-        <div class="cart-info" id="cartInfo">0 items | Total: $0.00</div>
+        <div class="cart-info" id="cartInfo">0 items | Total: 0.00 ETB</div>
         <button class="checkout-btn" onclick="checkoutWithChapa()">Checkout with Chapa</button>
     </div>
 
     <script>
-        // Initialize Telegram Web App
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Product Inventory (Including correct hardware variants and new PS Plus plans)
+        // Exact Inventory with correct ETB pricing & PS Plus subscriptions
         const products = [
             {
-                id: "ps5-console",
-                name: "PlayStation 5 Console",
+                id: "ps4-slim",
+                name: "PlayStation 4 Slim 500GB",
                 category: "Console",
-                price: 499.99,
-                description: "Brand new PS5 console with ultra-high speed SSD and DualSense wireless controller included.",
-                image: "images/ps5.jpg"
-            },
-            {
-                id: "ps4-slim-console",
-                name: "PlayStation 4 Slim Console",
-                category: "Console",
-                price: 299.99,
-                description: "Sleek PS4 Slim console delivering awesome gaming power with 1TB storage.",
+                price: 58000.00,
+                description: "Sleek PS4 Slim console delivering awesome gaming power with 500GB storage.",
                 image: "images/ps4-slim.jpg"
             },
             {
-                id: "ps5-controller",
-                name: "PS5 DualSense Wireless Controller",
-                category: "Controller",
-                price: 69.99,
-                description: "Official Sony DualSense wireless controller for PlayStation 5 with haptic feedback.",
-                image: "images/ps5-controller.jpg"
+                id: "ps4-slim-jb",
+                name: "PlayStation 4 Slim Jailbreak",
+                category: "Console",
+                price: 72000.00,
+                description: "PS4 Slim Jailbreak edition pre-loaded with games.",
+                image: "images/ps4-slim.jpg"
+            },
+            {
+                id: "ps4-pro-jb",
+                name: "PlayStation 4 Pro Jailbreak",
+                category: "Console",
+                price: 75000.00,
+                description: "High performance PS4 Pro Jailbreak system.",
+                image: "images/ps4-pro.jpg"
+            },
+            {
+                id: "ps5-fat-digital",
+                name: "PlayStation 5 Fat Digital Edition",
+                category: "Console",
+                price: 155000.00,
+                description: "PS5 Fat Digital Edition console.",
+                image: "images/ps5.jpg"
+            },
+            {
+                id: "ps5-fat-disc",
+                name: "PlayStation 5 Fat Disc Edition",
+                category: "Console",
+                price: 165000.00,
+                description: "PS5 Fat console with Ultra HD Blu-ray disc drive.",
+                image: "images/ps5.jpg"
+            },
+            {
+                id: "ps5-slim-digital",
+                name: "PlayStation 5 Slim Digital Edition",
+                category: "Console",
+                price: 175000.00,
+                description: "Compact design PS5 Slim Digital Edition.",
+                image: "images/ps5-slim.jpg"
+            },
+            {
+                id: "ps5-slim-disc",
+                name: "PlayStation 5 Slim Disc Edition",
+                category: "Console",
+                price: 185000.00,
+                description: "Compact design PS5 Slim with disc drive.",
+                image: "images/ps5-slim.jpg"
             },
             {
                 id: "ps4-controller",
                 name: "PS4 DualShock 4 Controller",
                 category: "Controller",
-                price: 59.99,
-                description: "Original DualShock 4 wireless controller for PlayStation 4 systems.",
+                price: 6000.00,
+                description: "Original DualShock 4 wireless controller for PlayStation 4.",
                 image: "images/ps4-controller.jpg"
             },
             {
-                id: "fc25-game",
-                name: "EA Sports FC 25 (PS5)",
-                category: "Game",
-                price: 69.99,
-                description: "The newest football experience featuring HyperMotionV technology.",
-                image: "images/fc25.jpg"
+                id: "ps5-controller",
+                name: "PS5 DualSense Wireless Controller",
+                category: "Controller",
+                price: 13000.00,
+                description: "Official Sony DualSense wireless controller for PlayStation 5.",
+                image: "images/ps5-controller.jpg"
             },
-            // --- PS PLUS SUBSCRIPTION PLANS ---
+            {
+                id: "fc24-game",
+                name: "EA Sports FC 24 Game Disc",
+                category: "Game",
+                price: 4000.00,
+                description: "EA Sports FC 24 physical game disc.",
+                image: "images/fc24.jpg"
+            },
+            // --- PS PLUS SUBSCRIPTIONS (ETB + $10 equivalent fee converted) ---
             {
                 id: "ps-plus-essential-1m",
                 name: "PS Plus Essential (1 Month)",
                 category: "Subscription",
-                price: 20.99,
+                price: 3099.00,
                 description: "Core features including online multiplayer access, monthly downloadable games, exclusive PS Store discounts, and 100GB cloud storage.",
                 image: "images/ps-plus-essential.jpg"
             },
@@ -263,7 +302,7 @@
                 id: "ps-plus-extra-1m",
                 name: "PS Plus Extra (1 Month)",
                 category: "Subscription",
-                price: 26.99,
+                price: 3799.00,
                 description: "Includes Essential features plus access to a massive game catalog of over 400 PS4 and PS5 titles, featuring blockbuster hits like The Last of Us Part I and indie favorites.",
                 image: "images/ps-plus-extra.jpg"
             },
@@ -271,7 +310,7 @@
                 id: "ps-plus-deluxe-1m",
                 name: "PS Plus Deluxe (1 Month)",
                 category: "Subscription",
-                price: 29.99,
+                price: 4299.00,
                 description: "The ultimate pass including Essential & Extra perks, plus the Classics retro catalog, time-limited game trials, and access to masterpieces like The Last of Us Part I and The Last of Us Part II Remastered.",
                 image: "images/ps-plus-deluxe.jpg"
             },
@@ -279,7 +318,7 @@
                 id: "ps-plus-essential-3m",
                 name: "PS Plus Essential (3 Months)",
                 category: "Subscription",
-                price: 37.99,
+                price: 5499.00,
                 description: "3 months of core features including online multiplayer access, monthly free downloadable games, exclusive discounts, and 100GB cloud storage.",
                 image: "images/ps-plus-essential-3m.jpg"
             },
@@ -287,7 +326,7 @@
                 id: "ps-plus-extra-3m",
                 name: "PS Plus Extra (3 Months)",
                 category: "Subscription",
-                price: 49.99,
+                price: 6999.00,
                 description: "3 months of Essential features plus unlimited access to over 400 PS4 and PS5 catalog titles, including hits like The Last of Us Part I.",
                 image: "images/ps-plus-extra-3m.jpg"
             },
@@ -295,7 +334,7 @@
                 id: "ps-plus-deluxe-3m",
                 name: "PS Plus Deluxe (3 Months)",
                 category: "Subscription",
-                price: 59.99,
+                price: 7999.00,
                 description: "3 months of the ultimate package: Extra catalog games, classic retro games, game trials, and titles like The Last of Us Part I and The Last of Us Part II Remastered.",
                 image: "images/ps-plus-deluxe-3m.jpg"
             },
@@ -303,7 +342,7 @@
                 id: "ps-plus-essential-12m",
                 name: "PS Plus Essential (12 Months)",
                 category: "Subscription",
-                price: 89.99,
+                price: 13799.00,
                 description: "A full year of online multiplayer, monthly downloadable games, exclusive store discounts, and 100GB cloud storage at the best value.",
                 image: "images/ps-plus-essential-12m.jpg"
             },
@@ -311,7 +350,7 @@
                 id: "ps-plus-extra-12m",
                 name: "PS Plus Extra (12 Months)",
                 category: "Subscription",
-                price: 145.99,
+                price: 22599.00,
                 description: "A full year of Essential perks plus 365 days of access to a massive library of 400+ games, featuring blockbuster titles like The Last of Us Part I.",
                 image: "images/ps-plus-extra-12m.jpg"
             },
@@ -319,7 +358,7 @@
                 id: "ps-plus-deluxe-12m",
                 name: "PS Plus Deluxe (12 Months)",
                 category: "Subscription",
-                price: 169.99,
+                price: 26599.00,
                 description: "The ultimate 1-year pass: full access to the Extra library, retro Classics catalog, game trials, and top-tier masterpieces like The Last of Us Part I and The Last of Us Part II Remastered.",
                 image: "images/ps-plus-deluxe-12m.jpg"
             }
@@ -346,7 +385,7 @@
                             <div class="product-desc">${product.description}</div>
                         </div>
                         <div class="product-footer">
-                            <span class="product-price">$${product.price.toFixed(2)}</span>
+                            <span class="product-price">${product.price.toLocaleString()} ETB</span>
                             <button class="add-to-cart-btn" onclick="addToCart('${product.id}')">Add</button>
                         </div>
                     </div>
@@ -389,7 +428,7 @@
 
             if(totalItems > 0) {
                 cartBar.style.display = 'flex';
-                cartInfo.innerText = `${totalItems} item(s) | Total: $${totalPrice.toFixed(2)}`;
+                cartInfo.innerText = `${totalItems} item(s) | Total: ${totalPrice.toLocaleString()} ETB`;
             } else {
                 cartBar.style.display = 'none';
             }
@@ -404,10 +443,10 @@
                 itemsSummary.push(`${cart[id].name} (x${cart[id].qty})`);
             }
 
-            // Send data back to Telegram bot or trigger Chapa payment handler
             const orderData = {
                 items: itemsSummary,
                 total: totalPrice,
+                currency: "ETB",
                 user: tg.initDataUnsafe?.user?.username || tg.initDataUnsafe?.user?.id || "guest"
             };
 
@@ -415,7 +454,6 @@
             tg.close();
         }
 
-        // Initial render
         renderProducts('All');
     </script>
 </body>
