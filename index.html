@@ -855,26 +855,38 @@
             <div id="checkoutFormView">
                 <h2>Checkout & Delivery</h2>
 
-                <div class="checkout-section-title">Delivery Method</div>
-                <div class="delivery-options">
-                    <label class="delivery-card selected" id="cardStorePickup" onclick="setDeliveryMethod('pickup')">
-                        <input type="radio" name="deliveryMethod" value="pickup" checked>
-                        <div class="delivery-card-info">
-                            <h4>Store Pickup — FREE</h4>
-                            <p>Pickup at Yeka Abado, Gedera Bacha Mall, First Floor</p>
-                        </div>
-                    </label>
+                <!-- Delivery Method Section -->
+                <div id="deliveryMethodSectionWrapper">
+                    <div class="checkout-section-title">Delivery Method</div>
+                    <div class="delivery-options">
+                        <label class="delivery-card selected" id="cardStorePickup" onclick="setDeliveryMethod('pickup')">
+                            <input type="radio" name="deliveryMethod" value="pickup" checked>
+                            <div class="delivery-card-info">
+                                <h4>Store Pickup — FREE</h4>
+                                <p>Pickup at Yeka Abado, Gedera Bacha Mall, First Floor</p>
+                            </div>
+                        </label>
 
-                    <label class="delivery-card" id="cardHomeDelivery" onclick="setDeliveryMethod('delivery')">
-                        <input type="radio" name="deliveryMethod" value="delivery">
-                        <div class="delivery-card-info">
-                            <h4>Home Delivery</h4>
-                            <p>FREE delivery to Megenagna only. Other areas may incur a delivery fee depending on location.</p>
-                        </div>
-                    </label>
+                        <label class="delivery-card" id="cardHomeDelivery" onclick="setDeliveryMethod('delivery')">
+                            <input type="radio" name="deliveryMethod" value="delivery">
+                            <div class="delivery-card-info">
+                                <h4>Home Delivery</h4>
+                                <p>FREE delivery to Megenagna only. Other areas may incur a delivery fee depending on location.</p>
+                            </div>
+                        </label>
+                    </div>
                 </div>
 
-                <!-- Address Fields (Shown only on Home Delivery) -->
+                <!-- Digital Delivery Notice Box (Only for subscriptions / mixed) -->
+                <div id="digitalNoticeBox" style="display: none;">
+                    <div class="checkout-section-title">⚡ Digital Delivery</div>
+                    <div class="arrival-notice" id="digitalNoticeText">
+                        Your PlayStation Plus subscription will be activated within 30 minutes after payment verification.<br><br>
+                        No physical delivery is required.
+                    </div>
+                </div>
+
+                <!-- Address Fields (Shown only on Home Delivery for physical items) -->
                 <div id="addressSection" style="display: none;">
                     <div class="checkout-section-title">Delivery Address</div>
                     <div class="form-group">
@@ -891,10 +903,23 @@
                     </div>
                 </div>
 
-                <div class="checkout-section-title">Estimated Arrival</div>
-                <div class="arrival-notice">
-                    🕒 <strong>Estimated Delivery Time:</strong> 1–2 Business Days<br>
-                    Orders are processed after payment verification. You will receive updates through Telegram once your order is confirmed.
+                <!-- PSN Username Field (Shown if cart contains PS Plus) -->
+                <div id="psnAccountSection" style="display: none;">
+                    <div class="checkout-section-title">PlayStation Account</div>
+                    <div class="form-group">
+                        <label for="psnUsername">PlayStation Network Online ID (PSN Username)</label>
+                        <input type="text" id="psnUsername" placeholder="Enter your PSN Online ID (e.g. SuperPlayer123)">
+                    </div>
+                    <p style="font-size: 11px; color: #aaa; margin: -4px 0 10px 0;">Your subscription will be activated on this PlayStation account.</p>
+                </div>
+
+                <!-- Estimated Arrival Section -->
+                <div id="estimatedArrivalSection">
+                    <div class="checkout-section-title" id="estimatedTitle">Estimated Arrival</div>
+                    <div class="arrival-notice" id="arrivalNoticeText">
+                        🕒 <strong>Estimated Delivery Time:</strong> 1–2 Business Days<br>
+                        Orders are processed after payment verification. You will receive updates through Telegram once your order is confirmed.
+                    </div>
                 </div>
 
                 <div class="checkout-section-title">Order Summary</div>
@@ -956,8 +981,8 @@
                 
                 <div class="success-card">
                     <div><strong>Order ID:</strong> <span id="successOrderId">#SPS-48291</span></div>
-                    <div style="margin-top: 4px;"><strong>Delivery:</strong> <span id="successDeliveryText">Store Pickup (FREE)</span></div>
-                    <div style="margin-top: 4px;"><strong>Estimated Arrival:</strong> 1–2 Business Days</div>
+                    <div style="margin-top: 4px;" id="successFulfillmentRow"><strong>Delivery:</strong> <span id="successDeliveryText">Store Pickup (FREE)</span></div>
+                    <div style="margin-top: 4px;" id="successArrivalRow"><strong>Estimated Arrival:</strong> 1–2 Business Days</div>
                     <div style="margin-top: 8px; color: #4cd964;">We'll notify you on Telegram as soon as your payment is verified.</div>
                 </div>
 
@@ -1533,21 +1558,36 @@
         function setDeliveryMethod(method) {
             selectedDeliveryMethod = method;
             const cardPickup = document.getElementById('cardStorePickup');
-            const cardDelivery = document.getElementById('cardHomeDelivery');
+            const cardHomeDelivery = document.getElementById('cardHomeDelivery');
             const addressSection = document.getElementById('addressSection');
 
             if (method === 'pickup') {
                 cardPickup.classList.add('selected');
-                cardDelivery.classList.remove('selected');
+                cardHomeDelivery.classList.remove('selected');
                 cardPickup.querySelector('input').checked = true;
                 addressSection.style.display = 'none';
             } else {
-                cardDelivery.classList.add('selected');
+                cardHomeDelivery.classList.add('selected');
                 cardPickup.classList.remove('selected');
-                cardDelivery.querySelector('input').checked = true;
+                cardHomeDelivery.querySelector('input').checked = true;
                 addressSection.style.display = 'block';
             }
             populateCheckoutSummary();
+        }
+
+        // Helper checks for cart item types
+        function getCartComposition() {
+            let hasSubscription = false;
+            let hasPhysical = false;
+
+            for (let id in cart) {
+                if (cart[id].category === 'Subscription') {
+                    hasSubscription = true;
+                } else {
+                    hasPhysical = true;
+                }
+            }
+            return { hasSubscription, hasPhysical };
         }
 
         function populateCheckoutSummary() {
@@ -1564,10 +1604,19 @@
                 summaryContainer.appendChild(row);
             }
 
-            const deliveryText = (selectedDeliveryMethod === 'pickup') ? 'FREE (Store Pickup)' : 'FREE (Megenagna only)';
+            const { hasSubscription, hasPhysical } = getCartComposition();
+            let deliveryText = 'FREE (Store Pickup)';
+            if (hasPhysical && !hasSubscription) {
+                deliveryText = (selectedDeliveryMethod === 'pickup') ? 'FREE (Store Pickup)' : 'FREE (Megenagna only)';
+            } else if (hasPhysical && hasSubscription) {
+                deliveryText = (selectedDeliveryMethod === 'pickup') ? 'FREE (Store Pickup) + Digital' : 'FREE (Megenagna only) + Digital';
+            } else if (hasSubscription && !hasPhysical) {
+                deliveryText = 'Digital Activation (Instant)';
+            }
+
             const deliveryRow = document.createElement('div');
             deliveryRow.className = 'summary-row';
-            deliveryRow.innerHTML = `<span>Delivery</span> <span>${deliveryText}</span>`;
+            deliveryRow.innerHTML = `<span>Fulfillment</span> <span>${deliveryText}</span>`;
             summaryContainer.appendChild(deliveryRow);
 
             const divider = document.createElement('hr');
@@ -1581,6 +1630,68 @@
         }
 
         function openCheckoutModal() {
+            const { hasSubscription, hasPhysical } = getCartComposition();
+
+            const deliveryMethodSectionWrapper = document.getElementById('deliveryMethodSectionWrapper');
+            const digitalNoticeBox = document.getElementById('digitalNoticeBox');
+            const addressSection = document.getElementById('addressSection');
+            const psnAccountSection = document.getElementById('psnAccountSection');
+            const estimatedArrivalSection = document.getElementById('estimatedArrivalSection');
+            const estimatedTitle = document.getElementById('estimatedTitle');
+            const arrivalNoticeText = document.getElementById('arrivalNoticeText');
+
+            if (hasSubscription && !hasPhysical) {
+                // ONLY PlayStation Plus subscriptions
+                deliveryMethodSectionWrapper.style.display = 'none';
+                digitalNoticeBox.style.display = 'block';
+                document.getElementById('digitalNoticeText').innerHTML = `
+                    ⚡ <strong>Digital Delivery</strong><br><br>
+                    Your PlayStation Plus subscription will be activated within 30 minutes after payment verification.<br><br>
+                    No physical delivery is required.
+                `;
+                addressSection.style.display = 'none';
+                psnAccountSection.style.display = 'block';
+                estimatedArrivalSection.style.display = 'block';
+                estimatedTitle.innerText = 'Estimated Activation Time';
+                arrivalNoticeText.innerHTML = '⏱ <strong>Within 30 Minutes After Payment Verification</strong>';
+            } else if (hasPhysical && !hasSubscription) {
+                // ONLY physical products
+                deliveryMethodSectionWrapper.style.display = 'block';
+                digitalNoticeBox.style.display = 'none';
+                if (selectedDeliveryMethod === 'delivery') {
+                    addressSection.style.display = 'block';
+                } else {
+                    addressSection.style.display = 'none';
+                }
+                psnAccountSection.style.display = 'none';
+                estimatedArrivalSection.style.display = 'block';
+                estimatedTitle.innerText = 'Estimated Arrival';
+                arrivalNoticeText.innerHTML = `
+                    🕒 <strong>Estimated Delivery Time:</strong> 1–2 Business Days<br>
+                    Orders are processed after payment verification. You will receive updates through Telegram once your order is confirmed.
+                `;
+            } else if (hasPhysical && hasSubscription) {
+                // BOTH physical and digital subscriptions
+                deliveryMethodSectionWrapper.style.display = 'block';
+                digitalNoticeBox.style.display = 'block';
+                document.getElementById('digitalNoticeText').innerHTML = `
+                    ⚡ <strong>Mixed Order Notice</strong><br><br>
+                    Your PlayStation Plus subscription will be activated digitally within 30 minutes after payment verification, while your physical items will be delivered within 1–2 business days.
+                `;
+                if (selectedDeliveryMethod === 'delivery') {
+                    addressSection.style.display = 'block';
+                } else {
+                    addressSection.style.display = 'none';
+                }
+                psnAccountSection.style.display = 'block';
+                estimatedArrivalSection.style.display = 'block';
+                estimatedTitle.innerText = 'Estimated Fulfillment Time';
+                arrivalNoticeText.innerHTML = `
+                    🕒 <strong>Physical Delivery:</strong> 1–2 Business Days<br>
+                    ⏱ <strong>Digital Activation:</strong> Within 30 Minutes After Payment Verification
+                `;
+            }
+
             document.getElementById('checkoutFormView').style.display = 'block';
             document.getElementById('successView').style.display = 'none';
             populateCheckoutSummary();
@@ -1620,11 +1731,21 @@
         }
 
         function confirmOrder() {
-            if (selectedDeliveryMethod === 'delivery') {
+            const { hasSubscription, hasPhysical } = getCartComposition();
+
+            if (hasPhysical && selectedDeliveryMethod === 'delivery') {
                 const subCity = document.getElementById('subCity').value.trim();
                 const landmark = document.getElementById('landmark').value.trim();
                 if (!subCity || !landmark) {
                     alert("Please fill in your Sub City and Area / Landmark for delivery.");
+                    return;
+                }
+            }
+
+            if (hasSubscription) {
+                const psnUsername = document.getElementById('psnUsername').value.trim();
+                if (!psnUsername) {
+                    alert("Please enter your PlayStation Network Online ID (PSN Username).");
                     return;
                 }
             }
@@ -1640,7 +1761,17 @@
             // Generate random order ID
             const randomId = '#SPS-' + Math.floor(10000 + Math.random() * 90000);
             document.getElementById('successOrderId').innerText = randomId;
-            document.getElementById('successDeliveryText').innerText = (selectedDeliveryMethod === 'pickup') ? 'Store Pickup (FREE)' : '🚚 FREE (Megenagna only)';
+            
+            if (hasSubscription && !hasPhysical) {
+                document.getElementById('successDeliveryText').innerText = 'Digital Activation (Within 30 Mins)';
+                document.getElementById('successArrivalRow').innerHTML = '<strong>Estimated Activation:</strong> Within 30 Mins After Payment';
+            } else if (hasPhysical && hasSubscription) {
+                document.getElementById('successDeliveryText').innerText = selectedDeliveryMethod === 'pickup' ? 'Store Pickup + Digital' : 'Home Delivery + Digital';
+                document.getElementById('successArrivalRow').innerHTML = '<strong>Estimated Fulfillment:</strong> Physical: 1–2 Days | Digital: 30 Mins';
+            } else {
+                document.getElementById('successDeliveryText').innerText = (selectedDeliveryMethod === 'pickup') ? 'Store Pickup (FREE)' : '🚚 FREE (Megenagna only)';
+                document.getElementById('successArrivalRow').innerHTML = '<strong>Estimated Arrival:</strong> 1–2 Business Days';
+            }
 
             // Switch to success view inside modal
             document.getElementById('checkoutFormView').style.display = 'none';
@@ -1656,9 +1787,10 @@
 
             const orderData = {
                 order_id: randomId,
-                delivery_method: selectedDeliveryMethod === 'pickup' ? 'Store Pickup' : 'Home Delivery',
-                sub_city: selectedDeliveryMethod === 'delivery' ? document.getElementById('subCity').value.trim() : 'N/A',
-                landmark: selectedDeliveryMethod === 'delivery' ? document.getElementById('landmark').value.trim() : 'N/A',
+                delivery_method: hasPhysical ? (selectedDeliveryMethod === 'pickup' ? 'Store Pickup' : 'Home Delivery') : 'Digital Only',
+                sub_city: (hasPhysical && selectedDeliveryMethod === 'delivery') ? document.getElementById('subCity').value.trim() : 'N/A',
+                landmark: (hasPhysical && selectedDeliveryMethod === 'delivery') ? document.getElementById('landmark').value.trim() : 'N/A',
+                psn_username: hasSubscription ? document.getElementById('psnUsername').value.trim() : 'N/A',
                 items: itemsSummary,
                 total: totalPrice,
                 currency: "ETB",
