@@ -42,6 +42,17 @@
             margin: 0;
         }
 
+        .store-location-banner {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 12px;
+            color: #4cd964;
+            margin-bottom: 15px;
+        }
+
         .category-filter {
             display: flex;
             gap: 8px;
@@ -158,7 +169,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: -4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.3);
             z-index: 100;
         }
 
@@ -178,7 +189,7 @@
             cursor: pointer;
         }
 
-        /* Modal styling for Telebirr / CBE payment info */
+        /* Modal styling */
         .modal {
             display: none;
             position: fixed;
@@ -192,6 +203,7 @@
             align-items: center;
             padding: 15px;
             box-sizing: border-box;
+            overflow-y: auto;
         }
 
         .modal-content {
@@ -201,6 +213,7 @@
             width: 100%;
             max-width: 400px;
             border: 1px solid #333;
+            margin: auto;
         }
 
         .modal-content h2 {
@@ -210,16 +223,38 @@
             text-align: center;
         }
 
-        .payment-option {
-            background-color: #2a2a2a;
-            padding: 12px;
-            border-radius: 8px;
+        .form-group {
             margin-bottom: 12px;
         }
 
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 4px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px 10px;
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+
+        .payment-option {
+            background-color: #2a2a2a;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
         .payment-option h3 {
-            margin: 0 0 5px 0;
-            font-size: 14px;
+            margin: 0 0 4px 0;
+            font-size: 13px;
             color: #4cd964;
         }
 
@@ -227,8 +262,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 13px;
-            margin-top: 4px;
+            font-size: 12px;
+            margin-top: 2px;
             color: #ccc;
         }
 
@@ -236,10 +271,21 @@
             background-color: #0070d1;
             color: #fff;
             border: none;
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 4px;
             font-size: 11px;
             cursor: pointer;
+        }
+
+        .disclaimer-box {
+            background-color: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #e74c3c;
+            margin-bottom: 12px;
+            line-height: 1.4;
         }
 
         .close-modal-btn {
@@ -251,7 +297,7 @@
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 8px;
         }
     </style>
 </head>
@@ -261,6 +307,10 @@
         <h1>Super PS Store</h1>
         <p>Consoles, Controllers, Games & Subscriptions</p>
     </header>
+
+    <div class="store-location-banner">
+        📍 <strong>Store Location:</strong> Yeka Abado, Gedera Bacha Mall, First Floor
+    </div>
 
     <div class="category-filter" id="categoryFilter">
         <button class="filter-btn active" onclick="filterProducts('All')">All</button>
@@ -279,19 +329,25 @@
         <button class="checkout-btn" onclick="openPaymentModal()">Checkout</button>
     </div>
 
-    <!-- Payment Instructions Modal -->
+    <!-- Payment & Delivery Instructions Modal -->
     <div class="modal" id="paymentModal">
         <div class="modal-content">
-            <h2>Select Payment Method</h2>
-            <p style="font-size: 12px; text-align: center; color: #aaa; margin-top: 0;">Transfer total amount to one of the accounts below and send receipt:</p>
+            <h2>Checkout & Payment</h2>
+            
+            <div class="form-group" style="margin-top: 10px;">
+                <label for="userLocation">Delivery Location / Address:</label>
+                <input type="text" id="userLocation" placeholder="e.g., Bole, Addis Ababa">
+            </div>
+
+            <p style="font-size: 12px; color: #aaa; margin: 10px 0 6px 0;">Transfer total amount to one of the accounts below:</p>
             
             <div class="payment-option">
                 <h3>Telebirr</h3>
                 <div class="payment-detail-row">
-                    <span><strong>Phone:</strong> <span id="telebirrNum">0924474307</span></span>
+                    <span><strong>Phone:</strong> 0924474307</span>
                     <button class="copy-btn" onclick="copyText('0924474307', this)">Copy</button>
                 </div>
-                <div class="payment-detail-row" style="margin-top: 6px;">
+                <div class="payment-detail-row">
                     <span><strong>Name:</strong> Anteneh</span>
                 </div>
             </div>
@@ -299,15 +355,19 @@
             <div class="payment-option">
                 <h3>Commercial Bank of Ethiopia (CBE)</h3>
                 <div class="payment-detail-row">
-                    <span><strong>Account:</strong> <span id="cbeNum">1000355132351</span></span>
+                    <span><strong>Account:</strong> 1000355132351</span>
                     <button class="copy-btn" onclick="copyText('1000355132351', this)">Copy</button>
                 </div>
-                <div class="payment-detail-row" style="margin-top: 6px;">
+                <div class="payment-detail-row">
                     <span><strong>Name:</strong> Anteneh Tesfaye</span>
                 </div>
             </div>
 
-            <button class="checkout-btn" style="width: 100%; margin-top: 5px;" onclick="confirmOrder()">Confirm & Send Order</button>
+            <div class="disclaimer-box">
+                <strong>Disclaimer:</strong> Please send your payment receipt screenshot directly to <strong>@iamanteneh</strong> on Telegram. Orders will only be processed and dispatched after payment verification.
+            </div>
+
+            <button class="checkout-btn" style="width: 100%;" onclick="confirmOrder()">Confirm & Send Order</button>
             <button class="close-modal-btn" onclick="closePaymentModal()">Cancel</button>
         </div>
     </div>
@@ -563,6 +623,12 @@
         }
 
         function confirmOrder() {
+            const locationInput = document.getElementById('userLocation').value.trim();
+            if (!locationInput) {
+                alert("Please enter your delivery location or address.");
+                return;
+            }
+
             let totalPrice = 0;
             let itemsSummary = [];
             
@@ -572,9 +638,12 @@
             }
 
             const orderData = {
+                store_location: "Yeka Abado, Gedera Bacha Mall, First Floor",
                 items: itemsSummary,
                 total: totalPrice,
                 currency: "ETB",
+                delivery_location: locationInput,
+                send_receipt_to: "@iamanteneh",
                 payment_methods: ["Telebirr: 0924474307 (Anteneh)", "CBE: 1000355132351 (Anteneh Tesfaye)"],
                 user: tg.initDataUnsafe?.user?.username || tg.initDataUnsafe?.user?.id || "guest"
             };
