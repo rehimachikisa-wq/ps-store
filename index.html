@@ -22,12 +22,12 @@
             color: var(--tg-theme-text-color, #ffffff);
             margin: 0;
             padding: 15px;
-            padding-bottom: 80px;
+            padding-bottom: 100px;
         }
 
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         header h1 {
@@ -53,11 +53,27 @@
             margin-bottom: 15px;
         }
 
+        /* Search Bar & Filters */
+        .search-container {
+            margin-bottom: 12px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 14px;
+            background-color: var(--card-bg);
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 20px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
         .category-filter {
             display: flex;
             gap: 8px;
             overflow-x: auto;
-            padding-bottom: 10px;
+            padding-bottom: 5px;
             margin-bottom: 15px;
             scrollbar-width: none;
         }
@@ -82,6 +98,7 @@
             border-color: var(--tg-theme-button-color, #0070d1);
         }
 
+        /* Product Grid */
         .product-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -96,7 +113,43 @@
             flex-direction: column;
             justify-content: space-between;
             border: 1px solid #2a2a2a;
+            position: relative;
+            cursor: pointer;
         }
+
+        .badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .badge-best { background-color: #f1c40f; color: #000; }
+        .badge-limited { background-color: #e74c3c; color: #fff; }
+
+        .fav-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.6);
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .fav-btn.active { color: #e74c3c; }
 
         .product-card img {
             width: 100%;
@@ -124,69 +177,294 @@
             overflow: hidden;
         }
 
-        .product-desc {
-            font-size: 11px;
-            color: var(--tg-theme-hint-color, #aaa);
-            margin: 0 0 8px 0;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
         .product-footer {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 4px;
+            margin-top: 8px;
         }
 
         .product-price {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             color: #4cd964;
         }
 
-        .add-to-cart-btn {
+        .quick-add-btn {
             background-color: var(--tg-theme-button-color, #0070d1);
-            color: var(--tg-theme-button-text-color, #fff);
+            color: #fff;
             border: none;
-            padding: 6px 10px;
+            padding: 5px 10px;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 11px;
+            font-weight: bold;
             cursor: pointer;
-            font-weight: 600;
         }
 
+        /* Views management */
+        .view-section {
+            display: none;
+        }
+        .view-section.active {
+            display: block;
+        }
+
+        /* Product Detail View */
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--tg-theme-button-color, #0070d1);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+            margin-bottom: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .detail-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #2a2a2a;
+            margin-bottom: 12px;
+        }
+
+        .slider-track {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .slider-track img {
+            min-width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 8px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            cursor: pointer;
+        }
+        .dot.active { background: #fff; }
+
+        .detail-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0 0 6px 0;
+        }
+
+        .detail-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4cd964;
+            margin-bottom: 12px;
+        }
+
+        .info-block {
+            margin-bottom: 12px;
+            background-color: #242424;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .info-block h3 {
+            margin: 0 0 6px 0;
+            font-size: 13px;
+            color: #0070d1;
+            text-transform: uppercase;
+        }
+
+        .info-block ul {
+            margin: 0;
+            padding-left: 16px;
+            font-size: 12px;
+            color: #ccc;
+            line-height: 1.5;
+        }
+
+        .info-block ul li {
+            margin-bottom: 3px;
+        }
+
+        /* Enhanced Quantity & Cart actions inside Detail View */
+        .qty-action-box {
+            background-color: #262626;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .qty-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 3px 8px;
+        }
+
+        .qty-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .qty-display {
+            font-size: 14px;
+            font-weight: 600;
+            min-width: 15px;
+            text-align: center;
+        }
+
+        .add-remove-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .main-action-btn {
+            width: 100%;
+            background-color: var(--tg-theme-button-color, #0070d1);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .remove-cart-btn {
+            background: none;
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Detailed Cart Floating Bar / Expanded View */
         .cart-bar {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background-color: #1e1e1e;
+            background-color: #1a1a1a;
             border-top: 1px solid #333;
-            padding: 12px 20px;
+            padding: 12px 15px;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
+            z-index: 100;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .cart-header-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.3);
-            z-index: 100;
+            cursor: pointer;
         }
 
-        .cart-info {
-            font-size: 14px;
-            font-weight: 550;
+        .cart-title-summary {
+            font-size: 15px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .cart-toggle-indicator {
+            font-size: 12px;
+            color: var(--tg-theme-button-color, #0070d1);
+        }
+
+        .cart-expanded-content {
+            display: none;
+            margin-top: 10px;
+            border-top: 1px solid #333;
+            padding-top: 10px;
+        }
+
+        .cart-expanded-content.open {
+            display: block;
+        }
+
+        .cart-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            margin-bottom: 8px;
+            color: #ccc;
+        }
+
+        .cart-divider {
+            border: none;
+            border-top: 1px dashed #444;
+            margin: 8px 0;
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 12px;
         }
 
         .checkout-btn {
+            width: 100%;
             background-color: #4cd964;
             color: #000;
             border: none;
-            padding: 10px 20px;
+            padding: 11px;
             border-radius: 8px;
             font-weight: bold;
             font-size: 14px;
             cursor: pointer;
+            text-align: center;
         }
 
         /* Modal styling */
@@ -303,30 +581,111 @@
 </head>
 <body>
 
-    <header>
-        <h1>Super PS Store</h1>
-        <p>Consoles, Controllers, Games & Subscriptions</p>
-    </header>
+    <!-- CATALOG VIEW -->
+    <div id="catalogView" class="view-section active">
+        <header>
+            <h1>Super PS Store</h1>
+            <p>Consoles, Controllers, Games & Subscriptions</p>
+        </header>
 
-    <div class="store-location-banner">
-        📍 <strong>Store Location:</strong> Yeka Abado, Gedera Bacha Mall, First Floor
+        <div class="store-location-banner">
+            📍 <strong>Store Location:</strong> Yeka Abado, Gedera Bacha Mall, First Floor
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search consoles, games, controllers..." oninput="handleSearch(this.value)">
+        </div>
+
+        <div class="category-filter" id="categoryFilter">
+            <button class="filter-btn active" onclick="filterProducts('All')">All</button>
+            <button class="filter-btn" onclick="filterProducts('Console')">Consoles</button>
+            <button class="filter-btn" onclick="filterProducts('Controller')">Controllers</button>
+            <button class="filter-btn" onclick="filterProducts('Game')">Games</button>
+            <button class="filter-btn" onclick="filterProducts('Subscription')">Subscriptions</button>
+        </div>
+
+        <div class="product-grid" id="productGrid">
+            <!-- Products injected via JS -->
+        </div>
     </div>
 
-    <div class="category-filter" id="categoryFilter">
-        <button class="filter-btn active" onclick="filterProducts('All')">All</button>
-        <button class="filter-btn" onclick="filterProducts('Console')">Consoles</button>
-        <button class="filter-btn" onclick="filterProducts('Controller')">Controllers</button>
-        <button class="filter-btn" onclick="filterProducts('Game')">Games</button>
-        <button class="filter-btn" onclick="filterProducts('Subscription')">Subscriptions</button>
+    <!-- PRODUCT DETAIL VIEW -->
+    <div id="detailView" class="view-section">
+        <button class="back-btn" onclick="showCatalogView()">← Back to Store</button>
+
+        <div class="detail-card">
+            <!-- Image Slider -->
+            <div class="slider-container" id="sliderContainer">
+                <div class="slider-track" id="sliderTrack">
+                    <!-- Slider images injected via JS -->
+                </div>
+                <div class="slider-dots" id="sliderDots"></div>
+            </div>
+
+            <h1 class="detail-title" id="detailTitle"></h1>
+            <div class="detail-price" id="detailPrice"></div>
+
+            <!-- Description Breakdown -->
+            <div class="info-block" id="includedBlock">
+                <h3>What's Included</h3>
+                <ul id="includedList"></ul>
+            </div>
+
+            <div class="info-block" id="featuresBlock">
+                <h3>Features</h3>
+                <ul id="featuresList"></ul>
+            </div>
+
+            <div class="info-block" id="conditionBlock">
+                <h3>Condition & Warranty</h3>
+                <ul id="conditionList">
+                    <li>✔ Brand New & Tested</li>
+                    <li>✔ Ready to Use</li>
+                    <li>🛡 Official Store Warranty Available</li>
+                </ul>
+            </div>
+
+            <div class="info-block">
+                <h3>🚚 Delivery Information</h3>
+                <ul style="margin:0; padding-left:16px; font-size:12px; color:#ccc;">
+                    <li>Fast delivery around Addis Ababa</li>
+                    <li>Store pickup available at Yeka Abado, Gedera Bacha Mall, 1st Floor</li>
+                </ul>
+            </div>
+
+            <!-- Quantity & Actions Box -->
+            <div class="qty-action-box">
+                <div class="qty-row" style="margin-bottom: 10px;">
+                    <span style="font-size: 13px; color: #aaa;" id="qtyLabelText">Quantity</span>
+                    <div class="quantity-controls">
+                        <button class="qty-btn" onclick="adjustDetailQty(-1)">-</button>
+                        <span class="qty-display" id="detailQtyDisplay">1</span>
+                        <button class="qty-btn" onclick="adjustDetailQty(1)">+</button>
+                    </div>
+                </div>
+                <div class="add-remove-container" id="detailActionButtons">
+                    <!-- Dynamic Add/Remove button content -->
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="product-grid" id="productGrid">
-        <!-- Products injected via JS -->
-    </div>
-
+    <!-- IMPROVED EXPANDABLE CART BAR -->
     <div class="cart-bar" id="cartBar" style="display: none;">
-        <div class="cart-info" id="cartInfo">0 items | Total: 0.00 ETB</div>
-        <button class="checkout-btn" onclick="openPaymentModal()">Checkout</button>
+        <div class="cart-header-bar" onclick="toggleCartExpand()">
+            <div class="cart-title-summary" id="cartSummaryTitle">🛒 Cart (0)</div>
+            <div class="cart-toggle-indicator" id="cartToggleText">View Details ▴</div>
+        </div>
+        
+        <div class="cart-expanded-content" id="cartExpandedContent">
+            <div id="cartItemList"></div>
+            <hr class="cart-divider">
+            <div class="cart-total-row">
+                <span>Total</span>
+                <span id="cartTotalPrice">0 ETB</span>
+            </div>
+            <button class="checkout-btn" onclick="openPaymentModal()">Checkout</button>
+        </div>
     </div>
 
     <!-- Payment & Delivery Instructions Modal -->
@@ -382,183 +741,316 @@
                 name: "PlayStation 4 Slim 500GB",
                 category: "Console",
                 price: 58000.00,
-                description: "Enjoy smooth gaming on the PlayStation 4 Slim with 500GB of storage. Includes 2 original Sony DualShock 4 wireless controllers, cables, and accessories.",
-                image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=400&q=80"
+                badge: "Best Seller",
+                badgeClass: "badge-best",
+                images: [
+                    "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=600&q=80",
+                    "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "2 Original Sony DualShock 4 Wireless Controllers",
+                    "HDMI Cable",
+                    "Power Cable",
+                    "All Necessary Accessories"
+                ],
+                features: [
+                    "⚡ 500GB High Storage",
+                    "🎮 Perfect for FIFA, GTA V & COD",
+                    "🌐 Built-in Wi-Fi & Ethernet",
+                    "🔊 Immersive Stereo Sound"
+                ]
             },
             {
                 id: "ps4-slim-jb",
                 name: "PlayStation 4 Slim Jailbreak",
                 category: "Console",
                 price: 72000.00,
-                description: "PlayStation 4 Slim Jailbreak Edition with pre-installed games. Includes 2 original Sony DualShock 4 controllers and ready-to-play setup.",
-                image: "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=400&q=80"
+                badge: "Limited Stock",
+                badgeClass: "badge-limited",
+                images: [
+                    "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=600&q=80",
+                    "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "2 Original Sony DualShock 4 Controllers",
+                    "HDMI Cable & Power Cable",
+                    "Pre-installed Game Library"
+                ],
+                features: [
+                    "⚡ Hundreds of Pre-installed Games",
+                    "🎮 Ready-to-play Setup",
+                    "🌐 No internet required for loaded games"
+                ]
             },
             {
                 id: "ps4-pro-jb",
                 name: "PlayStation 4 Pro Jailbreak",
                 category: "Console",
                 price: 75000.00,
-                description: "High-performance PS4 Pro Jailbreak with enhanced graphics and 4K support. Comes with 2 original Sony DualShock 4 controllers and pre-installed games.",
-                image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=400&q=80"
+                badge: "Best Seller",
+                badgeClass: "badge-best",
+                images: [
+                    "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80",
+                    "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "2 Original Sony DualShock 4 Controllers",
+                    "HDMI Cable & Power Cable"
+                ],
+                features: [
+                    "⚡ Enhanced 4K Gaming Graphics",
+                    "🎮 High Performance System",
+                    "🌐 Pre-loaded Game Collection"
+                ]
             },
             {
                 id: "ps5-fat-digital",
                 name: "PlayStation 5 Fat Digital Edition",
                 category: "Console",
                 price: 155000.00,
-                description: "Experience next-generation gaming with lightning-fast SSD performance. Includes 1 original Sony DualSense wireless controller and cables.",
-                image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=400&q=80"
+                badge: "Best Seller",
+                badgeClass: "badge-best",
+                images: [
+                    "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=600&q=80",
+                    "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "1 Original Sony DualSense Wireless Controller",
+                    "HDMI 2.1 Cable",
+                    "Power Cable & Base Stand"
+                ],
+                features: [
+                    "⚡ Ultra-Fast SSD Loading",
+                    "🎮 4K Gaming at up to 120Hz",
+                    "🔊 Tempest 3D AudioTech"
+                ]
             },
             {
                 id: "ps5-fat-disc",
                 name: "PlayStation 5 Fat Disc Edition",
                 category: "Console",
                 price: 165000.00,
-                description: "PlayStation 5 Disc Edition supporting both physical game discs and digital downloads. Includes 1 original DualSense controller and complete accessories.",
-                image: "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=400&q=80"
+                badge: "Limited Stock",
+                badgeClass: "badge-limited",
+                images: [
+                    "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=600&q=80",
+                    "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "1 Original Sony DualSense Controller",
+                    "Ultra HD Blu-ray Disc Drive",
+                    "HDMI & Power Cables"
+                ],
+                features: [
+                    "⚡ Supports Physical Discs & Digital Downloads",
+                    "🎮 Ultra-Fast SSD Storage",
+                    "🌐 Ray Tracing Support"
+                ]
             },
             {
                 id: "ps5-slim-digital",
                 name: "PlayStation 5 Slim Digital Edition",
                 category: "Console",
                 price: 175000.00,
-                description: "Compact next-generation PlayStation 5 Slim Digital Edition with ultra-fast SSD storage. Includes 1 original Sony DualSense controller.",
-                image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=400&q=80"
+                badge: "Best Seller",
+                badgeClass: "badge-best",
+                images: [
+                    "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=600&q=80",
+                    "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "1 Original Sony DualSense Controller",
+                    "HDMI Cable & Power Cable"
+                ],
+                features: [
+                    "⚡ Compact Slim Design",
+                    "🎮 Lightning-fast SSD Performance",
+                    "🔊 3D Audio Tech"
+                ]
             },
             {
                 id: "ps5-slim-disc",
                 name: "PlayStation 5 Slim Disc Edition",
                 category: "Console",
                 price: 185000.00,
-                description: "The newest PlayStation 5 Slim with Ultra HD Blu-ray Disc Drive. Includes 1 original Sony DualSense controller and original accessories.",
-                image: "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=400&q=80"
+                badge: "Best Seller",
+                badgeClass: "badge-best",
+                images: [
+                    "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=600&q=80",
+                    "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "1 Original Sony DualSense Controller",
+                    "Ultra HD Blu-ray Disc Drive",
+                    "HDMI Cable & Power Cable"
+                ],
+                features: [
+                    "⚡ Sleek New Slim Factor",
+                    "🎮 Disc Drive Included",
+                    "🌐 Ultra-fast SSD"
+                ]
             },
             {
                 id: "ps4-controller",
                 name: "PS4 DualShock 4 Controller",
                 category: "Controller",
                 price: 6000.00,
-                description: "Genuine Sony DualShock 4 Wireless Controller featuring responsive analog sticks, touchpad, motion controls, and vibration feedback.",
-                image: "https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?auto=format&fit=crop&w=400&q=80"
+                badge: "Best Seller",
+                badgeClass: "badge-best",
+                images: [
+                    "https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "Genuine Sony DualShock 4 Wireless Controller"
+                ],
+                features: [
+                    "⚡ Responsive Analog Sticks & Touchpad",
+                    "🎮 Built-in Speaker & Motion Controls",
+                    "🔊 Vibration Feedback"
+                ]
             },
             {
                 id: "ps5-controller",
                 name: "PS5 DualSense Wireless Controller",
                 category: "Controller",
                 price: 13000.00,
-                description: "Official Sony DualSense Wireless Controller with adaptive triggers, haptic feedback, built-in microphone, and ergonomic design.",
-                image: "https://images.unsplash.com/photo-1606318801954-d46d46d3360a?auto=format&fit=crop&w=400&q=80"
+                badge: "Best Seller",
+                badgeClass: "badge-best",
+                images: [
+                    "https://images.unsplash.com/photo-1606318801954-d46d46d3360a?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "Official Sony DualSense Wireless Controller"
+                ],
+                features: [
+                    "⚡ Adaptive Triggers & Haptic Feedback",
+                    "🎮 Built-in Microphone & Headset Jack",
+                    "🌐 USB-C Fast Charging"
+                ]
             },
             {
                 id: "fc24-game",
                 name: "EA Sports FC 24 Game Disc",
                 category: "Game",
                 price: 4000.00,
-                description: "Original EA Sports FC 24 game disc featuring the latest teams, players, Ultimate Team, Career Mode, and realistic football gameplay.",
-                image: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&w=400&q=80"
+                badge: "Best Seller",
+                badgeClass: "badge-best",
+                images: [
+                    "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "Original EA Sports FC 24 Game Disc"
+                ],
+                features: [
+                    "⚡ Latest Teams & Players",
+                    "🎮 Ultimate Team & Career Mode",
+                    "🌐 Realistic Football Gameplay"
+                ]
             },
-            // --- PS PLUS SUBSCRIPTIONS ---
             {
                 id: "ps-plus-essential-1m",
                 name: "PS Plus Essential (1 Month)",
                 category: "Subscription",
                 price: 3099.00,
-                description: "✔ Online Multiplayer\n✔ Monthly Free Games\n✔ Exclusive Store Discounts\n✔ Cloud Saves (100GB)",
-                image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80"
+                badge: "",
+                badgeClass: "",
+                images: [
+                    "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "1 Month Digital Subscription Voucher"
+                ],
+                features: [
+                    "✔ Online Multiplayer Access",
+                    "✔ Monthly Free Downloadable Games",
+                    "✔ Exclusive Store Discounts",
+                    "✔ 100GB Cloud Storage"
+                ]
             },
             {
                 id: "ps-plus-extra-1m",
                 name: "PS Plus Extra (1 Month)",
                 category: "Subscription",
                 price: 3799.00,
-                description: "Includes everything in Essential plus access to hundreds of PS4 & PS5 games from the PlayStation Game Catalog.",
-                image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80"
+                badge: "",
+                badgeClass: "",
+                images: [
+                    "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "1 Month Digital Subscription Voucher"
+                ],
+                features: [
+                    "✔ Everything in Essential",
+                    "✔ Access to 400+ PS4 & PS5 Game Catalog"
+                ]
             },
             {
                 id: "ps-plus-deluxe-1m",
                 name: "PS Plus Deluxe (1 Month)",
                 category: "Subscription",
                 price: 4299.00,
-                description: "Includes everything in Extra plus Classic PlayStation Games, Game Trials, and premium PlayStation membership benefits.",
-                image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80"
-            },
-            {
-                id: "ps-plus-essential-3m",
-                name: "PS Plus Essential (3 Months)",
-                category: "Subscription",
-                price: 5499.00,
-                description: "3 months of core features including online multiplayer access, monthly free downloadable games, and exclusive discounts.",
-                image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80"
-            },
-            {
-                id: "ps-plus-extra-3m",
-                name: "PS Plus Extra (3 Months)",
-                category: "Subscription",
-                price: 6999.00,
-                description: "3 months of Essential features plus unlimited access to over 400 PS4 and PS5 catalog titles.",
-                image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80"
-            },
-            {
-                id: "ps-plus-deluxe-3m",
-                name: "PS Plus Deluxe (3 Months)",
-                category: "Subscription",
-                price: 7999.00,
-                description: "3 months of the ultimate package: Extra catalog games, classic retro games, and game trials.",
-                image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80"
-            },
-            {
-                id: "ps-plus-essential-12m",
-                name: "PS Plus Essential (12 Months)",
-                category: "Subscription",
-                price: 13799.00,
-                description: "A full year of online multiplayer, monthly downloadable games, exclusive store discounts, and cloud storage at the best value.",
-                image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80"
-            },
-            {
-                id: "ps-plus-extra-12m",
-                name: "PS Plus Extra (12 Months)",
-                category: "Subscription",
-                price: 22599.00,
-                description: "A full year of Essential perks plus 365 days of access to a massive library of 400+ games.",
-                image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80"
-            },
-            {
-                id: "ps-plus-deluxe-12m",
-                name: "PS Plus Deluxe (12 Months)",
-                category: "Subscription",
-                price: 26599.00,
-                description: "The ultimate 1-year pass: full access to the Extra library, retro Classics catalog, game trials, and top-tier masterpieces.",
-                image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80"
+                badge: "",
+                badgeClass: "",
+                images: [
+                    "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600&q=80"
+                ],
+                included: [
+                    "1 Month Digital Subscription Voucher"
+                ],
+                features: [
+                    "✔ Everything in Extra",
+                    "✔ Classic PlayStation Games Catalog",
+                    "✔ Time-Limited Game Trials"
+                ]
             }
         ];
 
         let cart = {};
+        let favorites = JSON.parse(localStorage.getItem('ps_favorites') || '{}');
+        let currentSelectedProduct = null;
+        let detailQuantity = 1;
+        let currentImageIndex = 0;
+        let isCartExpanded = false;
 
-        function renderProducts(filterCategory = 'All') {
+        // Render Catalog Grid
+        function renderProducts(filterCategory = 'All', searchQuery = '') {
             const grid = document.getElementById('productGrid');
             const fragment = document.createDocumentFragment();
 
-            const filtered = filterCategory === 'All' 
-                ? products 
-                : products.filter(p => p.category === filterCategory);
+            const query = searchQuery.toLowerCase().trim();
+
+            const filtered = products.filter(p => {
+                const matchesCategory = filterCategory === 'All' || p.category === filterCategory;
+                const matchesSearch = p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query);
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<p style="grid-column: span 2; text-align: center; color: #888; padding: 20px;">No products found.</p>';
+                return;
+            }
 
             filtered.forEach((product, index) => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 
-                const isFirst = index === 0 && filterCategory === 'All';
+                const isFav = favorites[product.id];
+                const badgeHtml = product.badge ? `<span class="badge ${product.badgeClass}">${product.badge}</span>` : '';
+                const isFirst = index === 0 && filterCategory === 'All' && !query;
                 const loadingAttr = isFirst ? 'fetchpriority="high"' : 'loading="lazy" decoding="async"';
 
                 card.innerHTML = `
-                    <img src="${product.image}" alt="${product.name}" width="150" height="120" ${loadingAttr} onerror="this.src='https://via.placeholder.com/150?text=Super+PS+Store'">
-                    <div class="product-info">
-                        <div>
+                    ${badgeHtml}
+                    <button class="fav-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite('${product.id}')">❤️</button>
+                    <div onclick="openProductDetail('${product.id}')">
+                        <img src="${product.images[0]}" alt="${product.name}" width="150" height="120" ${loadingAttr}>
+                        <div class="product-info">
                             <div class="product-title">${product.name}</div>
-                            <div class="product-desc">${product.description}</div>
-                        </div>
-                        <div class="product-footer">
-                            <span class="product-price">${product.price.toLocaleString()} ETB</span>
-                            <button class="add-to-cart-btn" onclick="addToCart('${product.id}')">Add</button>
+                            <div class="product-footer">
+                                <span class="product-price">${product.price.toLocaleString()} ETB</span>
+                                <button class="quick-add-btn" onclick="event.stopPropagation(); quickAddToCart('${product.id}')">Add +</button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -576,36 +1068,199 @@
                     btn.classList.add('active');
                 }
             });
-            renderProducts(category);
+            const searchVal = document.getElementById('searchInput').value;
+            renderProducts(category, searchVal);
         }
 
-        function addToCart(productId) {
-            if(cart[productId]) {
+        function handleSearch(query) {
+            const activeCategoryBtn = document.querySelector('.category-filter .filter-btn.active');
+            const activeCategory = activeCategoryBtn ? activeCategoryBtn.innerText : 'All';
+            renderProducts(activeCategory, query);
+        }
+
+        function toggleFavorite(productId) {
+            if (favorites[productId]) {
+                delete favorites[productId];
+            } else {
+                favorites[productId] = true;
+            }
+            localStorage.setItem('ps_favorites', JSON.stringify(favorites));
+            const activeCategoryBtn = document.querySelector('.category-filter .filter-btn.active');
+            const searchVal = document.getElementById('searchInput').value;
+            renderProducts(activeCategoryBtn ? activeCategoryBtn.innerText : 'All', searchVal);
+        }
+
+        // Product Detail & Slider View
+        function openProductDetail(productId) {
+            currentSelectedProduct = products.find(p => p.id === productId);
+            if (!currentSelectedProduct) return;
+
+            detailQuantity = 1;
+            currentImageIndex = 0;
+
+            document.getElementById('detailTitle').innerText = currentSelectedProduct.name;
+            document.getElementById('detailPrice').innerText = currentSelectedProduct.price.toLocaleString() + " ETB";
+
+            // Setup Slider
+            const track = document.getElementById('sliderTrack');
+            const dots = document.getElementById('sliderDots');
+            track.innerHTML = '';
+            dots.innerHTML = '';
+
+            currentSelectedProduct.images.forEach((imgUrl, i) => {
+                const img = document.createElement('img');
+                img.src = imgUrl;
+                track.appendChild(img);
+
+                const dot = document.createElement('div');
+                dot.className = `dot ${i === 0 ? 'active' : ''}`;
+                dot.onclick = () => setSliderImage(i);
+                dots.appendChild(dot);
+            });
+            track.style.transform = `translateX(0px)`;
+
+            // Included list
+            const includedList = document.getElementById('includedList');
+            includedList.innerHTML = '';
+            currentSelectedProduct.included.forEach(item => {
+                const li = document.createElement('li');
+                li.innerText = `✅ ${item}`;
+                includedList.appendChild(li);
+            });
+
+            // Features list
+            const featuresList = document.getElementById('featuresList');
+            featuresList.innerHTML = '';
+            currentSelectedProduct.features.forEach(feat => {
+                const li = document.createElement('li');
+                li.innerText = feat;
+                featuresList.appendChild(li);
+            });
+
+            updateDetailQuantityUI();
+
+            document.getElementById('catalogView').classList.remove('active');
+            document.getElementById('detailView').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function setSliderImage(index) {
+            currentImageIndex = index;
+            const track = document.getElementById('sliderTrack');
+            track.style.transform = `translateX(-${index * 100}%)`;
+            
+            const dots = document.querySelectorAll('.slider-dots .dot');
+            dots.forEach((d, i) => {
+                d.classList.toggle('active', i === index);
+            });
+        }
+
+        function showCatalogView() {
+            document.getElementById('detailView').classList.remove('active');
+            document.getElementById('catalogView').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function adjustDetailQty(amount) {
+            detailQuantity += amount;
+            if (detailQuantity < 1) detailQuantity = 1;
+            document.getElementById('detailQtyDisplay').innerText = detailQuantity;
+        }
+
+        function updateDetailQuantityUI() {
+            document.getElementById('detailQtyDisplay').innerText = detailQuantity;
+            const container = document.getElementById('detailActionButtons');
+            const existingInCart = cart[currentSelectedProduct.id];
+
+            if (existingInCart) {
+                container.innerHTML = `
+                    <button class="main-action-btn" style="background-color: #4cd964; color: #000;" onclick="updateCartQuantity('${currentSelectedProduct.id}', ${detailQuantity})">Added ✓ (Update Qty)</button>
+                    <button class="remove-cart-btn" onclick="removeFromCart('${currentSelectedProduct.id}')">🗑 Remove from Cart</button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button class="main-action-btn" onclick="addCustomToCart('${currentSelectedProduct.id}', ${detailQuantity})">Add to Cart</button>
+                `;
+            }
+        }
+
+        function quickAddToCart(productId) {
+            if (cart[productId]) {
                 cart[productId].qty += 1;
             } else {
                 const product = products.find(p => p.id === productId);
                 cart[productId] = { ...product, qty: 1 };
             }
             updateCartBar();
+            if (currentSelectedProduct && currentSelectedProduct.id === productId) {
+                updateDetailQuantityUI();
+            }
+        }
+
+        function addCustomToCart(productId, qty) {
+            const product = products.find(p => p.id === productId);
+            cart[productId] = { ...product, qty: qty };
+            updateCartBar();
+            updateDetailQuantityUI();
+        }
+
+        function updateCartQuantity(productId, qty) {
+            if (cart[productId]) {
+                cart[productId].qty = qty;
+                updateCartBar();
+                updateDetailQuantityUI();
+            }
+        }
+
+        function removeFromCart(productId) {
+            delete cart[productId];
+            updateCartBar();
+            if (currentSelectedProduct && currentSelectedProduct.id === productId) {
+                detailQuantity = 1;
+                updateDetailQuantityUI();
+            }
+        }
+
+        // Cart Management & UI
+        function toggleCartExpand() {
+            isCartExpanded = !isCartExpanded;
+            const content = document.getElementById('cartExpandedContent');
+            const toggleText = document.getElementById('cartToggleText');
+            content.classList.toggle('open', isCartExpanded);
+            toggleText.innerText = isCartExpanded ? 'Close ▾' : 'View Details ▴';
         }
 
         function updateCartBar() {
             const cartBar = document.getElementById('cartBar');
-            const cartInfo = document.getElementById('cartInfo');
-            
+            const cartSummaryTitle = document.getElementById('cartSummaryTitle');
+            const cartItemList = document.getElementById('cartItemList');
+            const cartTotalPrice = document.getElementById('cartTotalPrice');
+
             let totalItems = 0;
             let totalPrice = 0;
+            cartItemList.innerHTML = '';
 
-            for(let id in cart) {
-                totalItems += cart[id].qty;
-                totalPrice += cart[id].price * cart[id].qty;
+            for (let id in cart) {
+                const item = cart[id];
+                totalItems += item.qty;
+                totalPrice += item.price * item.qty;
+
+                const row = document.createElement('div');
+                row.className = 'cart-item-row';
+                row.innerHTML = `
+                    <span>${item.name} x${item.qty}</span>
+                    <span><strong>${(item.price * item.qty).toLocaleString()} ETB</strong></span>
+                `;
+                cartItemList.appendChild(row);
             }
 
-            if(totalItems > 0) {
-                cartBar.style.display = 'flex';
-                cartInfo.innerText = `${totalItems} item(s) | Total: ${totalPrice.toLocaleString()} ETB`;
+            if (totalItems > 0) {
+                cartBar.style.display = 'block';
+                cartSummaryTitle.innerText = `🛒 Cart (${totalItems})`;
+                cartTotalPrice.innerText = `${totalPrice.toLocaleString()} ETB`;
             } else {
                 cartBar.style.display = 'none';
+                isCartExpanded = false;
             }
         }
 
@@ -659,7 +1314,8 @@
             tg.close();
         }
 
-        renderProducts('All');
+        // Initial catalog render
+        renderProducts('All', '');
     </script>
 </body>
 </html>
