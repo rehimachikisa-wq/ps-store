@@ -53,6 +53,27 @@
             margin-bottom: 15px;
         }
 
+        /* Visitor Trust Badge */
+        .visitor-trust-badge {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            padding: 8px 12px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #ccc;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .visitor-trust-badge span {
+            color: #4cd964;
+            font-weight: bold;
+        }
+
         /* Search Bar & Filters */
         .search-container {
             margin-bottom: 12px;
@@ -961,6 +982,11 @@
             📍 <strong>Store Location:</strong> Yeka Abado, Gedera Bacha Mall, First Floor
         </div>
 
+        <!-- Visitor Trust Badge -->
+        <div class="visitor-trust-badge" id="visitorTrustBadge">
+            👥 Trusted by <span id="visitor-count">5,421+</span> Visitors
+        </div>
+
         <div class="search-container">
             <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search consoles, games, controllers..." oninput="handleSearch(this.value)">
         </div>
@@ -1219,6 +1245,39 @@
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+
+        // Initialize Real Visitor Counter (Non-blocking execution with sessionStorage caching)
+        async function initVisitorCounter() {
+            const cachedCount = sessionStorage.getItem('sps_visitor_count');
+            if (cachedCount) {
+                document.getElementById("visitor-count").textContent = `${Number(cachedCount).toLocaleString()}+`;
+                return;
+            }
+
+            try {
+                // Send visit ping with initData for server-side verification
+                await fetch("/api/visit", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ initData: tg.initData })
+                });
+
+                const statsRes = await fetch("/api/stats");
+                if (statsRes.ok) {
+                    const data = await statsRes.json();
+                    if (data && typeof data.visitors === 'number') {
+                        sessionStorage.setItem('sps_visitor_count', data.visitors);
+                        document.getElementById("visitor-count").textContent = `${data.visitors.toLocaleString()}+`;
+                    }
+                }
+            } catch (err) {
+                // Graceful fallback: Keep default display or hide badge if preferred
+                console.log("Visitor counter sync skipped or offline.");
+            }
+        }
+
+        // Run visitor counter asynchronously without blocking page render
+        setTimeout(initVisitorCounter, 50);
 
         const products = [
             {
@@ -1816,13 +1875,12 @@
             }
         }
 
-        // Cart Management & UI Improvements (Requirements 1-7)
+        // Cart Management & UI Improvements
         function changeCartItemQty(cartKey, delta) {
             if (!cart[cartKey]) return;
             let newQty = cart[cartKey].qty + delta;
             
             if (newQty <= 0) {
-                // Requirement 2: If quantity becomes 0, ask whether to remove the item.
                 promptRemoveItem(cartKey, "Remove this item from your cart?");
             } else {
                 cart[cartKey].qty = newQty;
@@ -1862,13 +1920,12 @@
             const cartKey = pendingRemovalKey;
             closeConfirmDialog();
 
-            // Requirement 7: Use smooth animations when removing items so the UI feels polished.
             const rowEl = document.getElementById(`cart-row-${cartKey}`);
             if (rowEl) {
                 rowEl.classList.add('removing');
                 setTimeout(() => {
                     removeItemFinal(cartKey);
-                }, 300); // match transition duration
+                }, 300);
             } else {
                 removeItemFinal(cartKey);
             }
@@ -1886,7 +1943,6 @@
         function executeClearCart() {
             closeConfirmDialog();
             
-            // Animate all rows out or clear instantly
             const items = document.querySelectorAll('.cart-item-row');
             items.forEach(el => el.classList.add('removing'));
 
@@ -1903,12 +1959,10 @@
         function checkEmptyCartAndReturnIfNeeded() {
             const totalItemsCount = Object.keys(cart).reduce((sum, k) => sum + cart[k].qty, 0);
             if (totalItemsCount === 0) {
-                // Requirement 4: After removing the last item, automatically close the checkout/cart page, return user to product page, and display "Your cart is empty."
                 closeCheckoutModal();
                 if (isCartExpanded) {
                     toggleCartExpand();
                 }
-                // Return to product catalog view (or ensure we are not stuck in checkout)
                 showCatalogView();
                 showToast("Your cart is empty.");
             }
@@ -1955,7 +2009,6 @@
                     detailText = `<div class="cart-item-details">${item.durationLabel}</div>`;
                 }
 
-                // Requirement 1 & 2: Quantity selector and Remove button
                 row.innerHTML = `
                     <div style="flex: 1; min-width: 0;">
                         <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.name}</div>
