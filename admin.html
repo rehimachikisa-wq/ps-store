@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super PS Store - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body class="bg-gray-900 text-white font-sans p-6">
+    <div id="loading" class="text-center mt-20">
+        <h2 class="text-xl font-bold">Verifying your identity...</h2>
+        <p class="text-sm text-gray-400 mt-2">Checking Telegram credentials.</p>
+    </div>
+
+    <div id="dashboard" class="hidden max-w-4xl mx-auto space-y-6">
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold">🎮 Store Admin Dashboard</h1>
+            <span class="bg-green-500 text-black text-xs font-bold px-2 py-1 rounded">Authorized Owner</span>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+                <p class="text-sm text-gray-400">Total Visitors</p>
+                <h3 id="total" class="text-2xl font-bold mt-1">--</h3>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+                <p class="text-sm text-gray-400">Visitors Today</p>
+                <h3 id="today" class="text-2xl font-bold mt-1">--</h3>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+                <p class="text-sm text-gray-400">Online Now</p>
+                <h3 id="online" class="text-2xl font-bold mt-1 text-green-400">--</h3>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadAdmin() {
+            const initData = window.Telegram?.WebApp?.initData || '';
+
+            try {
+                const res = await fetch('/admin/api/dashboard', {
+                    headers: { 'x-telegram-init-data': initData }
+                });
+
+                if (!res.ok) throw new Error('Access Denied');
+
+                const data = await res.json();
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboard').classList.remove('hidden');
+
+                document.getElementById('total').innerText = data.totalVisitors;
+                document.getElementById('today').innerText = data.visitorsToday;
+                document.getElementById('online').innerText = data.onlineVisitors;
+            } catch (err) {
+                document.getElementById('loading').innerHTML = `
+                    <h2 class="text-red-500 font-bold text-xl">Access Denied 🚫</h2>
+                    <p class="text-gray-400 mt-2">You are not authorized to view this page or backend connection failed.</p>
+                `;
+            }
+        }
+        loadAdmin();
+    </script>
+</body>
+</html>
