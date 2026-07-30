@@ -333,8 +333,8 @@
             margin-bottom: 3px;
         }
 
-        /* Duration Selector Styles */
-        .duration-selector-box {
+        /* Variant & Duration Selector Styles */
+        .variant-selector-box, .duration-selector-box {
             background-color: #242424;
             padding: 12px;
             border-radius: 8px;
@@ -342,19 +342,19 @@
             border: 1px solid #333;
         }
 
-        .duration-selector-box h3 {
+        .variant-selector-box h3, .duration-selector-box h3 {
             margin: 0 0 8px 0;
             font-size: 13px;
             color: #0070d1;
             text-transform: uppercase;
         }
 
-        .duration-options-grid {
+        .variant-options-grid, .duration-options-grid {
             display: flex;
             gap: 8px;
         }
 
-        .duration-option-card {
+        .variant-option-card, .duration-option-card {
             flex: 1;
             background-color: #1e1e1e;
             border: 1px solid #444;
@@ -367,15 +367,11 @@
             transition: all 0.2s ease;
         }
 
-        .duration-option-card.selected {
+        .variant-option-card.selected, .duration-option-card.selected {
             border-color: #0070d1;
             background-color: #1a2634;
             color: #fff;
             font-weight: bold;
-        }
-
-        .duration-option-card input {
-            display: none;
         }
 
         /* Quantity & Cart actions inside Detail View */
@@ -495,7 +491,6 @@
             display: block;
         }
 
-        /* Cart item row with smooth animations */
         .cart-item-row {
             display: flex;
             justify-content: space-between;
@@ -1020,6 +1015,9 @@
             <h1 class="detail-title" id="detailTitle"></h1>
             <div class="detail-price" id="detailPrice"></div>
 
+            <!-- Variant Selector Container (Injected if variants exist) -->
+            <div id="variantSelectorContainer"></div>
+
             <!-- Subscription Duration Selector Container (Injected if subscription) -->
             <div id="durationSelectorContainer"></div>
 
@@ -1255,7 +1253,6 @@
             }
 
             try {
-                // Send visit ping with initData for server-side verification
                 await fetch("/api/visit", {
                     method: "POST",
                     headers: { 'Content-Type': 'application/json' },
@@ -1271,12 +1268,10 @@
                     }
                 }
             } catch (err) {
-                // Graceful fallback: Keep default display or hide badge if preferred
                 console.log("Visitor counter sync skipped or offline.");
             }
         }
 
-        // Run visitor counter asynchronously without blocking page render
         setTimeout(initVisitorCounter, 50);
 
         const products = [
@@ -1400,7 +1395,7 @@
                 id: "ps5-slim-digital",
                 name: "PlayStation 5 Slim Digital Edition",
                 category: "Console",
-                price: 175000.00,
+                price: 160000.00,
                 badge: "Best Seller",
                 badgeClass: "badge-best",
                 images: [
@@ -1422,7 +1417,7 @@
                 id: "ps5-slim-disc",
                 name: "PlayStation 5 Slim Disc Edition",
                 category: "Console",
-                price: 185000.00,
+                price: 195000.00,
                 badge: "Best Seller",
                 badgeClass: "badge-best",
                 images: [
@@ -1465,14 +1460,18 @@
                 id: "ps5-controller",
                 name: "PS5 DualSense Wireless Controller",
                 category: "Controller",
-                price: 13000.00,
+                price: 15000.00, // Default to Used price
                 badge: "Best Seller",
                 badgeClass: "badge-best",
+                variants: {
+                    "used": { label: "Used", price: 15000.00 },
+                    "new": { label: "Brand New", price: 18000.00 }
+                },
                 images: [
                     "https://images.unsplash.com/photo-1606318801954-d46d46d3360a?auto=format&fit=crop&w=600&q=80"
                 ],
                 included: [
-                    "Slightly Used Official Sony DualSense Wireless Controller"
+                    "Official Sony DualSense Wireless Controller"
                 ],
                 features: [
                     "⚡ Adaptive Triggers & Haptic Feedback",
@@ -1583,6 +1582,7 @@
         let currentSelectedProduct = null;
         let detailQuantity = 1;
         let selectedDuration = "1";
+        let selectedVariant = "used";
         let currentImageIndex = 0;
         let isCartExpanded = false;
         let selectedDeliveryMethod = 'pickup';
@@ -1617,6 +1617,8 @@
                 let displayPrice = product.price;
                 if (product.category === 'Subscription') {
                     displayPrice = product.durations["1"].price;
+                } else if (product.variants) {
+                    displayPrice = product.variants["used"].price;
                 }
 
                 card.innerHTML = `
@@ -1677,6 +1679,7 @@
             detailQuantity = 1;
             currentImageIndex = 0;
             selectedDuration = "1";
+            selectedVariant = "used";
 
             document.getElementById('detailTitle').innerText = currentSelectedProduct.name;
 
@@ -1697,6 +1700,34 @@
                 dots.appendChild(dot);
             });
             track.style.transform = `translateX(0px)`;
+
+            // Setup Variant Selector if Controller (Used / Brand New)
+            const variantContainer = document.getElementById('variantSelectorContainer');
+            if (currentSelectedProduct.variants) {
+                variantContainer.style.display = 'block';
+                let optionsHtml = '';
+                for (let varKey in currentSelectedProduct.variants) {
+                    const varObj = currentSelectedProduct.variants[varKey];
+                    const isSelected = varKey === selectedVariant ? 'selected' : '';
+                    optionsHtml += `
+                        <div class="variant-option-card ${isSelected}" onclick="selectVariant('${varKey}')" id="var-card-${varKey}">
+                            <div><strong>${varObj.label}</strong></div>
+                            <div style="font-size: 11px; color: #4cd964; margin-top:2px;">${varObj.price.toLocaleString()} ETB</div>
+                        </div>
+                    `;
+                }
+                variantContainer.innerHTML = `
+                    <div class="variant-selector-box">
+                        <h3>Condition / Edition *</h3>
+                        <div class="variant-options-grid">
+                            ${optionsHtml}
+                        </div>
+                    </div>
+                `;
+            } else {
+                variantContainer.style.display = 'none';
+                variantContainer.innerHTML = '';
+            }
 
             // Setup Duration Selector if Subscription
             const durationContainer = document.getElementById('durationSelectorContainer');
@@ -1757,7 +1788,7 @@
                 `;
             } else {
                 conditionList.innerHTML = `
-                    <li>✔ Slightly Used & Tested</li>
+                    <li>✔ Tested & Verified</li>
                     <li>✔ Pristine Condition</li>
                     <li>🛡 Store Warranty Available</li>
                 `;
@@ -1768,6 +1799,17 @@
             document.getElementById('catalogView').classList.remove('active');
             document.getElementById('detailView').classList.add('active');
             window.scrollTo(0, 0);
+        }
+
+        function selectVariant(variantKey) {
+            selectedVariant = variantKey;
+            document.querySelectorAll('.variant-option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            const activeCard = document.getElementById(`var-card-${variantKey}`);
+            if (activeCard) activeCard.classList.add('selected');
+            updateProductPriceDisplay();
+            updateDetailQuantityUI();
         }
 
         function selectDuration(durationKey) {
@@ -1785,6 +1827,8 @@
             let price = currentSelectedProduct.price;
             if (currentSelectedProduct.category === 'Subscription') {
                 price = currentSelectedProduct.durations[selectedDuration].price;
+            } else if (currentSelectedProduct.variants) {
+                price = currentSelectedProduct.variants[selectedVariant].price;
             }
             document.getElementById('detailPrice').innerText = price.toLocaleString() + " ETB";
         }
@@ -1812,10 +1856,6 @@
             document.getElementById('detailQtyDisplay').innerText = detailQuantity;
         }
 
-        function getCartKey(productId, duration) {
-            return currentSelectedProduct && currentSelectedProduct.category === 'Subscription' ? `${productId}-${duration}` : productId;
-        }
-
         function updateDetailQuantityUI() {
             if (!currentSelectedProduct) return;
             document.getElementById('detailQtyDisplay').innerText = detailQuantity;
@@ -1824,6 +1864,8 @@
             let cartKey = currentSelectedProduct.id;
             if (currentSelectedProduct.category === 'Subscription') {
                 cartKey = `${currentSelectedProduct.id}-${selectedDuration}`;
+            } else if (currentSelectedProduct.variants) {
+                cartKey = `${currentSelectedProduct.id}-${selectedVariant}`;
             }
 
             const existingInCart = cart[cartKey];
@@ -1842,6 +1884,7 @@
 
         function addCustomToCart(qty) {
             let price = currentSelectedProduct.price;
+            let variantLabel = "";
             let durationLabel = "";
             let cartKey = currentSelectedProduct.id;
 
@@ -1850,6 +1893,11 @@
                 price = durObj.price;
                 durationLabel = durObj.label;
                 cartKey = `${currentSelectedProduct.id}-${selectedDuration}`;
+            } else if (currentSelectedProduct.variants) {
+                const varObj = currentSelectedProduct.variants[selectedVariant];
+                price = varObj.price;
+                variantLabel = varObj.label;
+                cartKey = `${currentSelectedProduct.id}-${selectedVariant}`;
             }
 
             cart[cartKey] = {
@@ -1857,6 +1905,7 @@
                 name: currentSelectedProduct.name,
                 category: currentSelectedProduct.category,
                 tier: currentSelectedProduct.tier || null,
+                variantLabel: variantLabel,
                 durationMonths: selectedDuration,
                 durationLabel: durationLabel,
                 price: price,
@@ -2007,6 +2056,8 @@
                 let detailText = '';
                 if (item.category === 'Subscription') {
                     detailText = `<div class="cart-item-details">${item.durationLabel}</div>`;
+                } else if (item.variantLabel) {
+                    detailText = `<div class="cart-item-details">${item.variantLabel}</div>`;
                 }
 
                 row.innerHTML = `
@@ -2088,6 +2139,8 @@
                 let subDetails = '';
                 if (item.category === 'Subscription') {
                     subDetails = `<div class="summary-row-details">${item.durationLabel}</div>`;
+                } else if (item.variantLabel) {
+                    subDetails = `<div class="summary-row-details">${item.variantLabel}</div>`;
                 }
 
                 row.innerHTML = `
@@ -2276,7 +2329,14 @@
             for(let key in cart) {
                 let item = cart[key];
                 totalPrice += item.price * item.qty;
-                let desc = item.category === 'Subscription' ? `${item.name} (${item.durationLabel}) x${item.qty}` : `${item.name} (x${item.qty})`;
+                let desc = "";
+                if (item.category === 'Subscription') {
+                    desc = `${item.name} (${item.durationLabel}) x${item.qty}`;
+                } else if (item.variantLabel) {
+                    desc = `${item.name} (${item.variantLabel}) x${item.qty}`;
+                } else {
+                    desc = `${item.name} (x${item.qty})`;
+                }
                 itemsSummary.push(desc);
             }
 
